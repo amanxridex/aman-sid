@@ -1,0 +1,66 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - ENTERPRISE ZERO-TRUST MESH POLICY
+// Language: Rakshak Security Kernel (RSK)
+// File: security/enterprise_zero_trust_mesh.rsk
+// Standard: Zero-Trust Architecture NIST SP 800-207 & CISA ZTMM v2.0
+// ==============================================================================
+
+shield EnterpriseZeroTrustMesh {
+    target: "/api/v1/internal/*", "/rpc/control_plane/*", "/mesh/service_discovery/*", "/keys/exchange/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [0, 1, 2, 7, 11];
+        trap_debugger: true;
+        max_cycle_jitter_ms: 12.5;
+        prohibit_hypervisor_emulation: true;
+        verify_cpu_instruction_cache: true;
+        enforce_secure_enclave: SGX_OR_SEV;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: true;
+        require_mutual_tls: true;
+        tls_minimum_version: TLS_1_3;
+        tls_cipher_suites: [
+            "TLS_AES_256_GCM_SHA384",
+            "TLS_CHACHA20_POLY1305_SHA256"
+        ];
+        enforce_source_ip_binding: true;
+        max_sliding_velocity: 15;
+        allow_loopback_proxy_only: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        quarantine_external_dns: true;
+        sinkhole_telemetry: true;
+        allowlist_outbound_cidr: [];
+        prohibit_cloud_relay: true;
+    }
+
+    telemetry {
+        min_path_entropy: 3.4;
+        max_token_burst: 30;
+        markov_transition_floor: 0.08;
+        require_human_micro_cadence: true;
+        min_keystroke_entropy_bits: 2.75;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 403;
+        fallback_action: RESET_TCP_STREAM;
+        inject_stego_canary: "RAKSHAK_ZT_CANARY_SHA384_7792a18b9c";
+        adversarial_token_rate: 0.0;
+        synthesize_decoy: "ERR_SEC_ENCLAVE_COMM_FAULT_HARDWARE_HALT";
+    }
+
+    audit {
+        etw_kernel_provider: "{B67E50C1-60F4-445B-A23F-B5A6F5C6A044}";
+        syslog_format: RFC_5424_STRUCTURED;
+        forward_to_local_named_pipe: "\\\\.\\pipe\\RakshakSecurityEvents";
+        emit_pcr7_attestation_record: true;
+    }
+}

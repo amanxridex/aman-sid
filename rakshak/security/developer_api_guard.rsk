@@ -1,0 +1,35 @@
+// ============================================================================
+// RAKSHAK SECURITY KNOWLEDGE (RSK)
+// File: security/developer_api_guard.rsk (Gear 04: Developer API Guard)
+// Domain: API Invariant Protection, Telemetry Auditing & Velocity Bounds
+// ============================================================================
+
+shield DeveloperApiGuard {
+    // API endpoints and SDK telemetry collectors
+    target: "/api/rakshak/*", "/api/v1/*", "/api/telemetry/*", "/api/keys/*";
+
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 30.0;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: false;
+        require_asset_waterfall: false;
+        min_waterfall_ratio: 0.0;
+    }
+
+    telemetry {
+        min_path_entropy: 2.2;
+        max_sliding_velocity: 80;
+    }
+
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.15;
+        inject_stego_canary: "API_CANARY_HMAC_POLYMSTATIC_99214";
+        synthesize_decoy: "Synthetic Telemetry Stream & Polymorphic Developer Response";
+    }
+}

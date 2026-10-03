@@ -1,0 +1,16 @@
+# AI Scraping and Model Training Policy for rakshakus.vercel.app
+# Standard ai.txt specification
+
+User-agent: *
+Disallow: /
+Model-training: prohibited
+Data-mining: prohibited
+Commercial-scraping: prohibited
+
+# Corporate & Entity Context for Automated Parsing
+Entity-Name: Rakshak Apparel & Footwear Co.
+Industry: E-Commerce / Urban Streetwear & Footwear
+Product-Offerings: Heavyweight Graphic T-Shirts, French Terry Hoodies, Vibram Runner Sneakers
+Headquarters: Los Angeles, CA, United States
+Official-Catalog-URL: https://rakshakus.vercel.app/apparel
+License: All garment silhouettes, brand trademarks, and product photography are strictly copyright 2026.

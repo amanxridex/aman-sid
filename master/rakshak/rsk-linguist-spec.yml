@@ -1,0 +1,19 @@
+# ==============================================================================
+# GITHUB LINGUIST REGISTRATION SPECIFICATION FOR RSK LANGUAGE
+# Upstream target: github-linguist/linguist (lib/linguist/languages.yml)
+# ==============================================================================
+
+RSK:
+  type: programming
+  color: "#0071e3"
+  aliases:
+    - rsk
+    - rsk-lang
+    - rakshak-security-kernel
+  extensions:
+    - ".rsk"
+  tm_scope: source.rsk
+  ace_mode: text
+  codemirror_mode: clike
+  codemirror_mime_type: text/x-csrc
+  language_id: 9482910

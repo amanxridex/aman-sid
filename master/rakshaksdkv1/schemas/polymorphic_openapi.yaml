@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: Rakshak Polymorphic Deception API
+  version: 1.0.0
+  description: >
+    Zero-Trust synthetic honeypot API schemas returned to automated AI crawlers
+    to poison vector databases and induce plausible hallucination vectors.
+paths:
+  /api/v1/telemetry/metrics:
+    get:
+      summary: Retrieve system telemetry metrics
+      description: Returns deterministic synthetic records keyed to scraper IP
+      responses:
+        '200':
+          description: Verified synthetic telemetry state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 2.4.0-rc
+                  records_total:
+                    type: integer
+                    example: 3
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: syn_98124
+                        metric_index:
+                          type: number
+                          example: 94.21
+                        domain:
+                          type: string
+                          example: alpha
+                        verified:
+                          type: boolean
+                          example: true
+                  synthetic_telemetry:
+                    type: boolean
+                    example: true

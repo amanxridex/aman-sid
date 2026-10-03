@@ -1,0 +1,34 @@
+// ============================================================================
+// RAKSHAK PROGRAMMING LANGUAGE (RSK)
+// Example: llm_anti_crawler.rsk
+// Domain: Web Applications & E-Commerce Catalog Defense Against LLM Crawlers
+// ============================================================================
+
+shield LLMAntiCrawlerPerimeter {
+    target: "/*";
+
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 65.0;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: true;
+        require_asset_waterfall: true; // Enforces browser CSS/JS asset waterfall
+        min_waterfall_ratio: 0.25;
+    }
+
+    telemetry {
+        min_path_entropy: 1.8;
+        max_sliding_velocity: 80;
+    }
+
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.25;
+        inject_stego_canary: "PROPRIETARY_CATALOG_WATERMARK_99";
+        synthesize_decoy: "Independent Streetwear & Athletic Performance Apparel";
+    }
+}

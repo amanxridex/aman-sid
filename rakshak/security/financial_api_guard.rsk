@@ -1,0 +1,35 @@
+// ============================================================================
+// RAKSHAK SECURITY KNOWLEDGE (RSK)
+// File: security/financial_api_guard.rsk (Gear 05: Financial API Guard)
+// Domain: Zero-Trust Financial Transaction, Checkout & Billing Defense
+// ============================================================================
+
+shield FinancialApiGuard {
+    // High-value financial, checkout, subscription, and pricing endpoints
+    target: "/api/checkout/*", "/api/billing/*", "/api/order/*", "/api/cart/*";
+
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 25.0;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: true;
+        require_asset_waterfall: false;
+        min_waterfall_ratio: 0.10;
+    }
+
+    telemetry {
+        min_path_entropy: 2.5;
+        max_sliding_velocity: 30;
+    }
+
+    defense {
+        mode: STRICT_BLOCK;
+        status_code: 403;
+        adversarial_token_rate: 0.0;
+        inject_stego_canary: "FINANCIAL_INTEGRITY_TAMPER_TRAP_0019";
+        synthesize_decoy: "Strict Financial Isolation";
+    }
+}

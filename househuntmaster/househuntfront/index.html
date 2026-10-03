@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>HouseHunt | Find Your Dream Home</title>
+    <meta name="description" content="HouseHunt is the smartest way to buy, sell, and rent properties. Discover premium real estate, apartments, and houses across India.">
+    <meta name="keywords" content="real estate, buy home, rent house, apartments, property listing, HouseHunt">
+    <meta name="author" content="HouseHunt">
+    
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://househunt.live/">
+    <meta property="og:title" content="HouseHunt | Find Your Dream Home">
+    <meta property="og:description" content="The smartest way to buy, sell, and rent properties. Discover premium real estate instantly.">
+    <meta property="og:image" content="https://househunt.live/assets/mainappicon.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://househunt.live/">
+    <meta property="twitter:title" content="HouseHunt | Find Your Dream Home">
+    <meta property="twitter:description" content="The smartest way to buy, sell, and rent properties. Discover premium real estate instantly.">
+    <meta property="twitter:image" content="https://househunt.live/assets/mainappicon.png">
+    
+    <link rel="canonical" href="https://househunt.live/">
+
+    <!-- JSON-LD Structured Data for Brand SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "HouseHunt",
+      "url": "https://househunt.live/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://househunt.live/explore?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "HouseHunt",
+      "url": "https://househunt.live/",
+      "logo": "https://househunt.live/assets/mainappicon.png",
+      "description": "HouseHunt is a zero-brokerage real estate platform in India for buying, selling, and renting properties.",
+      "sameAs": [
+        "https://twitter.com/househuntlive",
+        "https://www.instagram.com/househuntlive"
+      ]
+    }
+    </script>
+            <link rel="stylesheet" href="css/index.css">
+    <!-- PWA & Animations -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="js/transitions.js"></script>
+    
+    <script type="module" src="js/auth-guard.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Aggressive SEO / GEO Structured Data (JSON-LD) for LLMs & Google -->
+    <script type="application/ld+json">
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "HouseHunt",
+        "url": "https://househunt.live",
+        "description": "HouseHunt is India's real estate platform for buying, selling, and renting properties in Delhi NCR — zero brokerage, direct owner listings.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://househunt.live/html/explore.html?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "HouseHunt",
+          "url": "https://househunt.live",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://househunt.live/assets/mainappicon.png"
+          },
+          "sameAs": [
+            "https://www.instagram.com/househuntlive",
+            "https://www.facebook.com/househuntlive"
+          ]
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "@id": "https://househunt.live/#agent",
+        "name": "Aarambh Realtors",
+        "image": "https://househunt.live/assets/mainappicon.png",
+        "url": "https://househunt.live/",
+        "priceRange": "₹₹",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Noida",
+          "addressRegion": "Uttar Pradesh",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "28.535516",
+          "longitude": "77.391026"
+        },
+        "areaServed": [
+          {
+            "@type": "AdministrativeArea",
+            "name": "Delhi NCR"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Noida"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Gurgaon"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Delhi"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Ghaziabad"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Faridabad"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Greater Noida"
+          }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is HouseHunt and how is it different from 99acres or MagicBricks?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HouseHunt is a zero-brokerage real estate platform focused on Delhi NCR — Noida, Gurgaon, Delhi, Faridabad, and Ghaziabad. Unlike 99acres or MagicBricks, HouseHunt connects buyers and renters directly with verified property owners, eliminating broker fees entirely. Listings are free to post and free to browse."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is HouseHunt free? Are there any hidden charges?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, HouseHunt is completely free for both property owners and people looking to buy or rent. There are no brokerage fees, no listing fees, and no hidden charges. Owners can post their property for free and connect directly with interested buyers or tenants."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I find 2 BHK flats for rent in Noida under ₹20,000?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Open HouseHunt and select Noida from the city filter. Set property type to Apartment, select 'For Rent', choose 2 BHK, and set your price range. All results will show direct owner listings in Noida within your budget — no broker involved."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I post my property on HouseHunt?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Tap 'Post Property' on the homepage, select whether you're an owner or agent, choose rent or sell, pick the property type (apartment, villa, plot, commercial), and fill in the details. Your listing goes live immediately and is visible to buyers across Delhi NCR."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does HouseHunt verify property listings?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HouseHunt verifies seller mobile numbers and connects buyers directly with owners, reducing the risk of fraudulent listings. We recommend buyers physically visit properties and verify documents before finalising any deal."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which cities does HouseHunt cover in 2026?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HouseHunt currently covers the full Delhi NCR region: Noida, Greater Noida, Gurgaon (Gurugram), Delhi, Faridabad, and Ghaziabad. We are expanding to more Indian cities including Mumbai, Bangalore, and Hyderabad."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What types of properties can I find on HouseHunt?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HouseHunt lists residential and commercial properties: 1 BHK, 2 BHK, 3 BHK, and 4+ BHK apartments; independent houses and villas; builder floors; investment plots and land; office spaces and commercial shops; and PG/co-living accommodations."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is HuntAI?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "HuntAI is HouseHunt's upcoming AI-powered property search assistant. It will let users describe what they're looking for in natural language — for example, 'show me 2 BHK flats in Sector 62 Noida under ₹25,000 with parking' — and instantly surface the best matches. HuntAI is currently in development."
+            }
+          }
+        ]
+      }
+    ]
+    </script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <script>
+        // Check if splash has already been shown this session
+        if (sessionStorage.getItem('splashShown')) {
+            document.write('<style>#appSplashScreen { display: none !important; }</style>');
+        } else {
+            sessionStorage.setItem('splashShown', 'true');
+        }
+    </script>
+    <!-- Premium Splash Screen -->
+    <div id="appSplashScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0066ff; z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s ease;">
+        <div style="text-align: center;">
+            <img src="assets/mainappicon.png" alt="HouseHunt" style="width: 120px; height: 120px; border-radius: 30px; margin-bottom: 20px; animation: pulse 2s infinite;">
+            <h1 style="color: white; font-size: 24px; font-weight: 900; letter-spacing: -1px;">HOUSEHUNT</h1>
+        </div>
+    </div>
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('SW Registered!', reg);
+                }).catch(err => {
+                    console.log('SW Registration Failed', err);
+                });
+            });
+        }
+    </script>
+    <div class="app-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <header>
+                <div class="user-info" id="userProfile" onclick="window.location.href='html/login.html'">
+                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile" class="profile-pic skeleton" id="headerProfilePic">
+                    <div class="greeting">
+                        <div id="headerUserName" class="skeleton" style="height: 24px; width: 120px; margin-bottom: 4px; border-radius: 4px;"></div>
+                        <div id="headerUserLocation" class="skeleton" style="height: 16px; width: 80px; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <button class="notification-btn" onclick="window.location.href='html/notifications.html'">
+                    <i data-lucide="bell"></i>
+                    <div class="dot"></div>
+                </button>
+            </header>
+
+            <!-- Search Section -->
+            <div class="search-section" role="search" aria-label="Property Search">
+                <div class="search-bar">
+                    <i data-lucide="search" aria-hidden="true"></i>
+                    <input type="text" id="propertySearchInput" placeholder="Search Governance, Area, PACI number" aria-label="Search properties by area, sector, developer, or PACI number">
+                </div>
+                <button class="filter-btn" aria-label="Filter search criteria" aria-haspopup="dialog" aria-expanded="false">
+                    <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Categories -->
+            <div class="categories" role="tablist" aria-label="Property Categories">
+                <div class="category-item active" role="tab" aria-selected="true" tabindex="0" aria-label="Independent Houses and Builder Floors">
+                    <div class="category-icon">
+                        <i data-lucide="home" aria-hidden="true"></i>
+                    </div>
+                    <p>Independent</p>
+                </div>
+                <div class="category-item" role="tab" aria-selected="false" tabindex="0" aria-label="Commercial Space and Offices">
+                    <div class="category-icon">
+                        <i data-lucide="building" aria-hidden="true"></i>
+                    </div>
+                    <p>Commercial</p>
+                </div>
+                <div class="category-item" role="tab" aria-selected="false" tabindex="0" aria-label="Apartments and Flats">
+                    <div class="category-icon">
+                        <i data-lucide="building-2" aria-hidden="true"></i>
+                    </div>
+                    <p>Apartments</p>
+                </div>
+                <div class="category-item" role="tab" aria-selected="false" tabindex="0" aria-label="Luxury Villas">
+                    <div class="category-icon">
+                        <i data-lucide="palmtree" aria-hidden="true"></i>
+                    </div>
+                    <p>Villas</p>
+                </div>
+                <div class="category-item" role="tab" aria-selected="false" tabindex="0" aria-label="Investment Plots and Land">
+                    <div class="category-icon">
+                        <i data-lucide="map" aria-hidden="true"></i>
+                    </div>
+                    <p>Plots</p>
+                </div>
+            </div>
+
+            <!-- Promo Banner -->
+            <div class="promo-banner">
+                <div class="promo-content">
+                    <h3>Post your Property for <span>Free</span></h3>
+                    <p>List it on HouseHunt and get genuine leads</p>
+                <a href="html/hosttype.html" style="text-decoration: none;">
+                    <button class="post-btn">Post your property</button>
+                </a>
+                </div>
+            </div>
+
+            <!-- Filters & Sort -->
+            <div class="listings-header">
+                <div class="tabs" role="tablist" aria-label="Listing Intent">
+                    <div class="tab active" role="tab" aria-selected="true" tabindex="0" aria-label="Show properties for rent">For Rent</div>
+                    <div class="tab" role="tab" aria-selected="false" tabindex="0" aria-label="Show properties for sale">For Sale</div>
+                </div>
+                <button class="sort-btn" aria-label="Sort listings" aria-haspopup="listbox">
+                    <i data-lucide="arrow-up-down" aria-hidden="true"></i>
+                    Sort
+                </button>
+            </div>
+
+            <!-- Featured Listings -->
+            <div class="section-title">
+                <h2>Featured Listings</h2>
+                <a href="#" class="see-all">See All</a>
+            </div>
+            <div class="hero-slider-container">
+                <div id="featured-listings-container" class="hero-slider">
+                    <!-- Static Fallback for Crawlers (Cleared by index.js) -->
+                    <div class="hero-slide" style="cursor: pointer;">
+                        <div class="hero-slide-content">
+                            <img src="assets/mainappicon.png" alt="Premium 3 BHK Apartment in Sector 62 Noida">
+                            <div class="hero-overlay">
+                                <div class="price">₹ 85.50 L</div>
+                                <h3>3 BHK Apartment Sector 62 Noida</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-dots" id="slider-dots"></div>
+            </div>
+
+        <!-- Near You Section -->
+        <div class="home-section">
+            <div class="section-title">
+                <h2>Near You</h2>
+                <a href="html/explore.html" class="see-all">See All</a>
+            </div>
+            <div id="near-you-container" class="horizontal-scroll">
+                <!-- Static Fallback for Crawlers (Cleared by index.js) -->
+                <a href="html/property-view.html?id=1" style="text-decoration: none;" aria-label="View Details for 2 BHK Apartment Noida Sector 15">
+                    <div class="property-card">
+                        <img src="assets/mainappicon.png" alt="2 BHK Apartment for Rent in Sector 15 Noida" class="property-img">
+                        <div class="tag">Verified</div>
+                        <div class="property-details">
+                            <div class="prop-price">₹ 24,000/mo</div>
+                            <div class="prop-title">2 BHK Apartment Noida Sector 15</div>
+                            <div class="prop-loc">Sector 15, Noida</div>
+                        </div>
+                    </div>
+                </a>
+                <a href="html/property-view.html?id=2" style="text-decoration: none;" aria-label="View Details for Independent House Gurgaon DLF 3">
+                    <div class="property-card">
+                        <img src="assets/mainappicon.png" alt="Independent House for Sale in DLF Phase 3 Gurgaon" class="property-img">
+                        <div class="tag">New</div>
+                        <div class="property-details">
+                            <div class="prop-price">₹ 2.50 Cr</div>
+                            <div class="prop-title">Independent House Gurgaon DLF 3</div>
+                            <div class="prop-loc">DLF Phase 3, Gurgaon</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Top Developers -->
+        <div class="home-section">
+            <div class="section-title">
+                <h2>Top Developers</h2>
+            </div>
+            <div class="developers-grid" id="dynamic-developers-grid">
+                <!-- Skeletons while loading -->
+                <a href="#" class="dev-card skeleton" style="height: 100px;"></a>
+                <a href="#" class="dev-card skeleton" style="height: 100px;"></a>
+                <a href="#" class="dev-card skeleton" style="height: 100px;"></a>
+            </div>
+        </div>
+
+        <!-- Top Listings Section -->
+        <div class="home-section">
+            <div class="section-title">
+                <h2>Top Listings</h2>
+                <a href="html/explore.html" class="see-all">See All</a>
+            </div>
+            <div id="top-listings-container" class="horizontal-scroll">
+                <!-- Static Fallback for Crawlers (Cleared by index.js) -->
+                <a href="html/property-view.html?id=3" style="text-decoration: none;" aria-label="View Details for 3 BHK Luxury Villa Noida Sec 150">
+                    <div class="property-card">
+                        <img src="assets/mainappicon.png" alt="Luxury Villa for Sale in Sector 150 Noida" class="property-img">
+                        <div class="tag">Featured</div>
+                        <div class="property-details">
+                            <div class="prop-price">₹ 4.20 Cr</div>
+                            <div class="prop-title">3 BHK Luxury Villa Sec 150 Noida</div>
+                            <div class="prop-loc">Sector 150, Noida</div>
+                        </div>
+                    </div>
+                </a>
+                <a href="html/property-view.html?id=4" style="text-decoration: none;" aria-label="View Details for Commercial Office Space Delhi">
+                    <div class="property-card">
+                        <img src="assets/mainappicon.png" alt="Commercial Office for Rent in South Ext Delhi" class="property-img">
+                        <div class="tag">Verified</div>
+                        <div class="property-details">
+                            <div class="prop-price">₹ 75,000/mo</div>
+                            <div class="prop-title">Commercial Office Space Delhi</div>
+                            <div class="prop-loc">South Ext, Delhi</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+            <!-- Plots Section -->
+            <div class="home-section">
+                <div class="section-title">
+                    <h2>Investment Plots</h2>
+                    <a href="html/explore.html" class="see-all">See All</a>
+                </div>
+                <div id="plots-container" class="horizontal-scroll">
+                    <!-- Static Fallback for Crawlers (Cleared by index.js) -->
+                    <a href="html/property-view.html?id=5" style="text-decoration: none;" aria-label="View Details for 200 Sqyd Plot Greater Noida West">
+                        <div class="property-card">
+                            <img src="assets/mainappicon.png" alt="Residential Plot for Sale in Greater Noida West" class="property-img">
+                            <div class="tag">Verified</div>
+                            <div class="property-details">
+                                <div class="prop-price">₹ 45.00 L</div>
+                                <div class="prop-title">200 Sqyd Plot Greater Noida West</div>
+                                <div class="prop-loc">Greater Noida West</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Visible Premium Platform FAQ & Accordion Section -->
+            <div class="home-section faq-section" style="margin-top: 40px;">
+                <div class="section-title">
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+                <div class="faq-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>What is HouseHunt and how is it different from 99acres or MagicBricks?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                HouseHunt is a zero-brokerage real estate platform focused on Delhi NCR — Noida, Gurgaon, Delhi, Faridabad, and Ghaziabad. Unlike 99acres or MagicBricks, HouseHunt connects buyers and renters directly with verified property owners, eliminating broker fees entirely. Listings are free to post and free to browse.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>Is HouseHunt free? Are there any hidden charges?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                Yes, HouseHunt is completely free for both property owners and people looking to buy or rent. There are no brokerage fees, no listing fees, and no hidden charges. Owners can post their property for free and connect directly with interested buyers or tenants.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>How do I find 2 BHK flats for rent in Noida under ₹20,000?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                Open HouseHunt and select Noida from the city filter. Set property type to Apartment, select "For Rent", choose 2 BHK, and set your price range. All results will show direct owner listings in Noida within your budget — no broker involved.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>How do I post my property on HouseHunt?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                Tap "Post Property" on the homepage, select whether you're an owner or agent, choose rent or sell, pick the property type (apartment, villa, plot, commercial), and fill in the details. Your listing goes live immediately and is visible to buyers across Delhi NCR.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>Does HouseHunt verify property listings?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                HouseHunt verifies seller mobile numbers and connects buyers directly with owners, reducing the risk of fraudulent listings. We recommend buyers physically visit properties and verify documents before finalising any deal.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>Which cities does HouseHunt cover in 2026?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                HouseHunt currently covers the full Delhi NCR region: Noida, Greater Noida, Gurgaon (Gurugram), Delhi, Faridabad, and Ghaziabad. We are expanding to more Indian cities including Mumbai, Bangalore, and Hyderabad.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>What types of properties can I find on HouseHunt?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                HouseHunt lists residential and commercial properties: 1 BHK, 2 BHK, 3 BHK, and 4+ BHK apartments; independent houses and villas; builder floors; investment plots and land; office spaces and commercial shops; and PG/co-living accommodations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="background: var(--white); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0, 0, 0, 0.03); overflow: hidden; transition: var(--transition);">
+                        <button class="faq-question" style="width: 100%; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; text-align: left; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; outline: none;">
+                            <span>What is HuntAI?</span>
+                            <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                            <p style="padding: 0 20px 16px 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); margin: 0;">
+                                HuntAI is HouseHunt's upcoming AI-powered property search assistant. It will let users describe what they're looking for in natural language — for example, "show me 2 BHK flats in Sector 62 Noida under ₹25,000 with parking" — and instantly surface the best matches. HuntAI is currently in development.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Integrated SEO Footer -->
+            <footer class="app-footer" style="padding-bottom: 110px; padding-top: 30px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center;">
+                <div class="footer-logo" style="font-size: 20px; font-weight: 900; color: var(--text-main); letter-spacing: -0.5px; margin-bottom: 2px;">House<span style="color: var(--primary);">Hunt</span></div>
+                <p class="powered-by" style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px;">powered by India Housing Projects Limited</p>
+                
+                <!-- Popular Cities -->
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <h3 style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Popular Cities</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+                        <a href="/noida" style="text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--white); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: var(--transition);">Flats in Noida</a>
+                        <a href="/gurgaon" style="text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--white); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: var(--transition);">Flats in Gurgaon</a>
+                        <a href="/delhi" style="text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--white); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: var(--transition);">Properties in Delhi</a>
+                        <a href="/faridabad" style="text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--white); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: var(--transition);">Flats in Faridabad</a>
+                        <a href="/ghaziabad" style="text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--white); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: var(--transition);">Flats in Ghaziabad</a>
+                        <a href="/greater-noida" style="text-decoration: none; font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--white); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: var(--transition);">Flats in Greater Noida</a>
+                    </div>
+                </div>
+
+                <!-- About & Trust -->
+                <div style="margin-bottom: 20px; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); padding-top: 15px;">
+                    <h3 style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">About & Trust</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                        <a href="/about" style="text-decoration: none; font-size: 12px; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> About HouseHunt
+                        </a>
+                        <a href="html/help.html" style="text-decoration: none; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="help-circle" style="width: 14px; height: 14px;"></i> Help Center
+                        </a>
+                        <a href="html/terms.html" style="text-decoration: none; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Terms of Service
+                        </a>
+                        <a href="html/privacy.html" style="text-decoration: none; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="lock" style="width: 14px; height: 14px;"></i> Privacy Policy
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-links" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
+                    <!-- Instagram -->
+                    <a href="#" aria-label="Instagram" style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary); display: flex; justify-content: center; align-items: center; color: var(--white); transition: var(--transition); box-shadow: 0 4px 12px rgba(45, 104, 255, 0.15);">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <!-- X (Twitter) -->
+                    <a href="#" aria-label="X" style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary); display: flex; justify-content: center; align-items: center; color: var(--white); transition: var(--transition); box-shadow: 0 4px 12px rgba(45, 104, 255, 0.15);">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                    </a>
+                    <!-- Facebook -->
+                    <a href="#" aria-label="Facebook" style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary); display: flex; justify-content: center; align-items: center; color: var(--white); transition: var(--transition); box-shadow: 0 4px 12px rgba(45, 104, 255, 0.15);">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+                    </a>
+                </div>
+
+                <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
+                    <p style="font-size: 10px; color: var(--text-muted); line-height: 1.4; margin: 0;">&copy; 2026 HouseHunt. The smartest way to find your home without brokers.</p>
+                    <p style="font-size: 9px; color: var(--text-muted); opacity: 0.6; margin-top: 4px;">Powered by India Housing Projects Limited. Regulated under UP RERA.</p>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Bottom Navigation -->
+                <nav class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="html/my-properties.html" class="nav-item">
+                <i data-lucide="layout-list"></i>
+                <span>My Properties</span>
+            </a>
+            <a href="html/ai.html" class="nav-item">
+                <div class="ai-video-container" style="width: 23px; height: 23px; display: flex; align-items: center; justify-content: center;">
+                    <video src="assets/huntai.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                </div>
+                <span>HuntAI</span>
+            </a>
+            <a href="html/messages.html" class="nav-item">
+                <i data-lucide="message-square"></i>
+                <span>Messages</span>
+            </a>
+            <a href="html/profile.html" class="nav-item">
+                <i data-lucide="user"></i>
+                <span>More</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Filter Bottom Sheet -->
+    <div class="filter-overlay" id="filterOverlay"></div>
+    <div class="filter-bottom-sheet" id="filterSheet">
+        <div class="sheet-header">
+            <div class="handle"></div>
+            <h3>Filter Search</h3>
+            <button class="close-sheet" id="closeSheet"><i data-lucide="x"></i></button>
+        </div>
+        <div class="sheet-content">
+            <div class="filter-group">
+                <label>Select City</label>
+                <div class="pill-group">
+                    <span class="pill active">Noida</span>
+                    <span class="pill">Gurgaon</span>
+                    <span class="pill">Delhi</span>
+                    <span class="pill">Faridabad</span>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <label>BHK Preference</label>
+                <div class="pill-group">
+                    <span class="pill">1 BHK</span>
+                    <span class="pill active">2 BHK</span>
+                    <span class="pill">3 BHK</span>
+                    <span class="pill">4+ BHK</span>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Price Range (₹)</label>
+                <div class="price-inputs">
+                    <input type="number" placeholder="Min">
+                    <span>to</span>
+                    <input type="number" placeholder="Max">
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <label>Property Status</label>
+                <div class="pill-group">
+                    <span class="pill active">Ready to Move</span>
+                    <span class="pill">Under Construction</span>
+                </div>
+            </div>
+        </div>
+        <div class="sheet-footer">
+            <button class="reset-btn">Reset</button>
+            <button class="apply-btn" id="applyFilter">Apply Filter</button>
+        </div>
+    </div>
+    
+    <!-- City Switcher Bottom Sheet -->
+    <div class="filter-overlay" id="cityOverlay"></div>
+    <div class="bottom-sheet" id="citySheet">
+        <div class="sheet-header">
+            <h3>Select City</h3>
+            <button class="close-sheet" id="closeCitySheet"><i data-lucide="x"></i></button>
+        </div>
+        <div class="sheet-content">
+            <div class="search-bar" style="margin-bottom: 20px; background: #f5f5f5;">
+                <i data-lucide="search"></i>
+                <input type="text" placeholder="Search for your city..." id="citySearchInput">
+            </div>
+            
+            <div class="city-list">
+                <div class="city-item auto-detect" id="autoDetectCity">
+                    <i data-lucide="navigation"></i>
+                    <span>Auto-detect my location</span>
+                </div>
+                
+                <h4 style="margin: 20px 0 15px; font-size: 0.9rem; color: #666; font-weight: 600;">Popular Cities</h4>
+                <div class="city-grid" id="popularCitiesGrid">
+                    <!-- Cities will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mandatory Phone Update Modal -->
+    <div class="phone-modal-overlay" id="phoneModal">
+        <div class="phone-modal">
+            <h2>Verify Mobile</h2>
+            <p>To provide a secure experience, please update your mobile number to continue using HouseHunt.</p>
+            <div class="phone-input-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="userPhoneInput" placeholder="+91 XXXXX XXXXX" maxlength="13">
+            </div>
+            <button class="update-phone-btn" id="updatePhoneBtn">Update & Continue</button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const faqItem = button.parentElement;
+                const answer = button.nextElementSibling;
+                const icon = button.querySelector('i');
+                const isOpen = faqItem.classList.contains('active');
+                
+                // Close all other items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                    item.style.borderColor = 'rgba(0, 0, 0, 0.03)';
+                    item.querySelector('.faq-answer').style.maxHeight = '0';
+                    const otherIcon = item.querySelector('.faq-question i');
+                    if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+                });
+
+                if (!isOpen) {
+                    faqItem.classList.add('active');
+                    faqItem.style.borderColor = 'var(--primary)';
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                    if (icon) icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+    </script>
+
+    <!-- PWA & Scripts -->
+    <script src="js/firebase-auth.js" type="module"></script>
+    <script src="js/data.js"></script>
+    <script src="js/index.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="js/tracker.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

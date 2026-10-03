@@ -1,0 +1,44 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - QUANTUM-SAFE POST-QUANTUM LATTICE GUARD
+// Language: Rakshak Security Kernel (RSK)
+// File: security/quantum_safe_lattice_guard.rsk
+// Standard: NIST FIPS 203 (ML-KEM / Kyber) & FIPS 204 (ML-DSA / Dilithium)
+// ==============================================================================
+
+shield QuantumSafeLatticeGuard {
+    target: "/crypto/pqc/kem/*", "/crypto/pqc/sign/*", "/handshake/hybrid_post_quantum/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [7, 11];
+        trap_debugger: true;
+        side_channel_constant_time: true;
+        zero_cache_lines_after_op: true;
+    }
+
+    cryptography {
+        primary_kem: "ML-KEM-1024";
+        fallback_kem: "Kyber-768";
+        digital_signature: "ML-DSA-87";
+        hybrid_classical_curve: "X25519";
+        enable_sponge_sponge_absorb: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        prohibit_plaintext_export: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 400;
+        inject_stego_canary: "PQC_LATTICE_DECOY_PUBKEY_SEED_78119024";
+        synthesize_decoy: "ERR_LATTICE_POLYNOMIAL_COEFFICIENT_OVERFLOW";
+    }
+
+    rules {
+        assert cipher_text.length >= 1088;
+        assert public_key.length == 1568;
+        assert timing.variance_nanoseconds <= 15;
+    }
+}

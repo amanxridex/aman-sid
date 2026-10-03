@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-09-13T06:12:09.591Z",
+  "packages": {
+    "windows": {
+      "file": "rakshak-windows-x64.zip",
+      "name": "Windows 11 / 10 (x64)",
+      "sha256": "b93e829ff1ae3eca7b2eaa240c719aeb644b43b9f2ca4a32c84f1f312488f96d",
+      "sizeBytes": 113838,
+      "size": "111.2 KB"
+    },
+    "mac": {
+      "file": "rakshak-macos-universal.zip",
+      "name": "macOS Apple Silicon & Intel",
+      "sha256": "c578e8ecc7a0e5ce94d175c5e380a34eb81ea556c8c1f412753fa2715ccc6acf",
+      "sizeBytes": 71545,
+      "size": "69.9 KB"
+    },
+    "linux": {
+      "file": "rakshak-linux-x64.tar.gz",
+      "name": "Linux x86_64 Tarball",
+      "sha256": "1faa89f1bb631ff92a6088030269f33ea9cb8b8efddf813bd534d44ec6a15e0b",
+      "sizeBytes": 43515,
+      "size": "42.5 KB"
+    },
+    "sdk": {
+      "file": "rakshaksdkv1-1.0.0.tgz",
+      "name": "NPM SDK Package Tarball",
+      "sha256": "826f4adde1cb5b3bc931bb7dd1a79eabdba0907061576a512f3cc9bbb7be2a65",
+      "sizeBytes": 8817231,
+      "size": "8.41 MB"
+    }
+  }
+}

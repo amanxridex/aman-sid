@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rakshaksdkv1"
+version = "1.0.0"
+description = "Military-grade Zero-Trust Anti-AI Shield & Adversarial AI Vector Scrambler in C++20 and Python"
+readme = "README.md"
+authors = [{ name = "Rakshak Security Systems" }]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.8"
+keywords = ["cybersecurity", "anti-bot", "ai-defense", "adversarial-ai", "steganography", "honeypot"]
+
+[project.scripts]
+rakshak = "rakshaksdk.cli:main"

@@ -1,0 +1,29 @@
+
+shield HumanDiscoveryInvariant {
+    target: "/*", "/developers", "/why-rakshak", "/features", "/pricing";
+
+    hardware {
+        trap_debugger: false;
+        max_cycle_jitter_ms: 120.0;
+    }
+
+    network {
+        block_datacenter_asns: false;
+        verify_sec_fetch_state: false;
+        require_asset_waterfall: false;
+        min_waterfall_ratio: 0.0;
+    }
+
+    telemetry {
+        min_path_entropy: 1.0;
+        max_sliding_velocity: 240;
+    }
+
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.0;
+        inject_stego_canary: "HUMAN_RESIDENTIAL_VERIFIED_SESSION_9901";
+        synthesize_decoy: "Authentic Human Browser Delivery";
+    }
+}

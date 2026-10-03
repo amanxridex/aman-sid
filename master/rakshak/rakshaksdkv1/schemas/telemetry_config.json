@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "RakshakMasterConfiguration",
+  "version": "1.0.0",
+  "thresholds": {
+    "detection_score_cutoff": 50,
+    "clockwork_latency_stddev_ms": 65.0,
+    "shannon_entropy_min_bits": 1.8,
+    "asset_waterfall_min_ratio": 0.25,
+    "sliding_window_seconds": 60
+  },
+  "deception_settings": {
+    "default_action": "deceive",
+    "silent_status_code": 200,
+    "adversarial_perturbation_rate": 0.25,
+    "bpe_split_rate": 0.15,
+    "steganographic_marker": "zero_width_unicode"
+  },
+  "protected_datacenter_asns": [
+    "15169", "396982", "19527", "36040", "36384",
+    "16509", "14618", "8075", "8074", "12076",
+    "46484", "13335", "31898", "14061", "24940",
+    "16276", "63949", "20473", "28753", "9009", "174"
+  ]
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Explore Properties | HouseHunt</title>
+    <meta name="description" content="Explore verified apartments, builder floors, independent houses, villas, and commercial properties for rent and sale in Delhi NCR with zero brokerage. Direct owner listings.">
+    <link rel="canonical" href="https://househunt.live/explore">
+    <meta property="og:title" content="Explore Properties | HouseHunt">
+    <meta property="og:description" content="Explore verified apartments, builder floors, independent houses, villas, and commercial properties for rent and sale in Delhi NCR with zero brokerage. Direct owner listings.">
+    <meta property="og:image" content="https://househunt.live/assets/mainappicon.png">
+    
+            <link rel="stylesheet" href="../css/explore.css">
+    <link rel="manifest" href="../manifest.json">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="theme-color" content="#f0f2f5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Search Header -->
+        <header class="explore-header" role="search" aria-label="Explore properties search bar">
+            <h1 class="visually-hidden" style="position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Explore Verified Real Estate Properties</h1>
+            <div class="search-row">
+                <button class="back-btn" aria-label="Back to Home Dashboard" onclick="window.location.href='../index.html'"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+                <div class="search-box">
+                    <i data-lucide="search" aria-hidden="true"></i>
+                    <input type="text" id="exploreSearchInput" placeholder="Search locality, project..." aria-label="Search properties by location, developer, or society name">
+                </div>
+                <button class="filter-btn" aria-label="Open search filter modal" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></button>
+            </div>
+            <!-- Quick Chips -->
+            <div class="filter-chips" role="tablist" aria-label="Quick Filters">
+                <div class="f-chip active" role="tab" aria-selected="true" tabindex="0" aria-label="Show all properties">All</div>
+                <div class="f-chip" role="tab" aria-selected="false" tabindex="0" aria-label="Show properties for rent">Rent</div>
+                <div class="f-chip" role="tab" aria-selected="false" tabindex="0" aria-label="Show properties for sale">Sale</div>
+                <div class="f-chip" role="tab" aria-selected="false" tabindex="0" aria-label="Show commercial properties">Commercial</div>
+            </div>
+        </header>
+
+        <!-- Listings -->
+        <div class="content-wrapper" id="explore-results">
+            <!-- Dynamic content will be injected here -->
+        </div>
+
+        <!-- Bottom Navigation -->
+                <nav class="bottom-nav">
+            <a href="../index.html" class="nav-item">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-properties.html" class="nav-item">
+                <i data-lucide="layout-list"></i>
+                <span>My Properties</span>
+            </a>
+            <a href="ai.html" class="nav-item">
+                <div class="ai-video-container" style="width: 23px; height: 23px; display: flex; align-items: center; justify-content: center;">
+                    <video src="../assets/huntai.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                </div>
+                <span>HuntAI</span>
+            </a>
+            <a href="messages.html" class="nav-item">
+                <i data-lucide="message-square"></i>
+                <span>Messages</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i data-lucide="user"></i>
+                <span>More</span>
+            </a>
+        </nav>
+
+        <!-- Filter Modal -->
+        <div class="filter-overlay" id="filterModal">
+            <div class="filter-bottom-sheet">
+                <div class="filter-header">
+                    <h3>Filters</h3>
+                    <button class="close-filter-btn" id="closeFilterBtn"><i data-lucide="x"></i></button>
+                </div>
+                <div class="filter-body">
+                    <div class="filter-section">
+                        <h4>Sort By Price</h4>
+                        <div class="filter-options sort-options">
+                            <label class="radio-label">
+                                <input type="radio" name="sortPrice" value="highToLow"> High to Low
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sortPrice" value="lowToHigh"> Low to High
+                            </label>
+                        </div>
+                    </div>
+                    <div class="filter-section">
+                        <h4>Location</h4>
+                        <select id="locationFilter" class="filter-select">
+                            <option value="all">All Locations</option>
+                            <option value="Noida">Noida</option>
+                            <option value="Gurgaon">Gurgaon</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Ghaziabad">Ghaziabad</option>
+                            <option value="Greater Noida">Greater Noida</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-footer">
+                    <button class="btn-reset" id="resetFiltersBtn">Reset</button>
+                    <button class="btn-apply" id="applyFiltersBtn">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/explore.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

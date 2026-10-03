@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#FFFFFF">
+    
+    <!-- PWA Fullscreen & Standalone Meta -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="InPunjab News">
+    
+    <!-- PWA Icons & Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="app-icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <title>InPunjab News Admin</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabaseClient.js"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- ── 0. Native Mobile Auth Screen (Username: vicky / Password: 1234567) ── -->
+    <div id="loginScreen" class="login-overlay">
+        <div class="login-card">
+            <div class="login-brand-header">
+                <img src="app-icon-192.png" alt="InPunjab News Icon" class="login-logo">
+                <h2>InPunjab News</h2>
+                <span class="login-subtitle">Editorial Mobile App</span>
+                <div class="login-owner-badge">Owner: Vicky Suri ✓</div>
+            </div>
+
+            <div id="loginErrorMsg" class="login-error" style="display: none;">
+                ⚠️ Incorrect username or password. Please try again.
+            </div>
+
+            <form id="loginForm" class="login-form" onsubmit="handleLoginSubmit(event)">
+                <div class="login-form-group">
+                    <label for="loginUsername">Username</label>
+                    <div class="input-with-icon">
+                        <span class="field-icon">👤</span>
+                        <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username" required>
+                    </div>
+                </div>
+
+                <div class="login-form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="input-with-icon">
+                        <span class="field-icon">🔒</span>
+                        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" required>
+                        <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility()" title="Show/Hide Password">👁️</button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginSubmitBtn" class="btn-login-submit">
+                    <span>Sign In to Admin</span>
+                    <span>➔</span>
+                </button>
+            </form>
+
+            <div class="login-footer-note">
+                🔒 Authorized editorial access only.
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="adminAppContainer" style="display: none;">
+        <!-- ── Top App Header (Pure Native App Style) ── -->
+        <header class="app-header">
+            <div class="header-row">
+                <div class="brand-wrapper">
+                    <img src="app-icon-192.png" alt="InPunjab News App Icon" class="portal-avatar">
+                    <div class="brand-info">
+                        <span class="brand-title">InPunjab News</span>
+                        <span class="brand-owner">
+                            Owner: Vicky Suri
+                            <span class="verified-badge" title="Verified Owner">✓</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <span class="header-badge-live">LIVE APP</span>
+                    <button type="button" class="btn-logout" onclick="handleLogout()" title="Log Out">Logout ⎋</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── TAB 1: NEW POST ── -->
+        <main id="tab-new-post" class="tab-content active">
+            <div class="section-intro">
+                <h2>Create News Post</h2>
+                <p>Upload photos, write headline, and publish instantly.</p>
+            </div>
+
+            <form id="newPostForm" class="form-card" autocomplete="off">
+                <!-- 1. Direct Image Upload Area -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Photos / Images
+                        <span class="hint">Tap to select or take photo</span>
+                    </label>
+
+                    <div class="image-upload-zone" id="uploadZone">
+                        <input type="file" id="imageFileInput" accept="image/*" multiple>
+                        <div class="upload-icon-circle">📷</div>
+                        <div class="upload-prompt">Upload Photo(s) or Take Picture</div>
+                        <div class="upload-subprompt">JPG, PNG, WebP • Auto-compressed</div>
+                    </div>
+
+                    <!-- Live Image Previews -->
+                    <div id="imagePreviewContainer" class="image-preview-container">
+                        <!-- Primary Headline Cover Preview -->
+                        <div class="primary-preview-card">
+                            <img id="primaryPreviewImg" src="" alt="Primary Headline Preview">
+                            <span class="preview-badge">Primary Headline Image</span>
+                            <button type="button" class="remove-btn" title="Remove image" onclick="removePrimaryImage()">✕</button>
+                        </div>
+
+                        <!-- Secondary Thumbnails Tray -->
+                        <div id="thumbnailsTray" class="thumbnails-tray"></div>
+                    </div>
+                </div>
+
+                <!-- 2. Headline / Title Input -->
+                <div class="form-group">
+                    <label class="form-label" for="postTitle">
+                        Headline / Title *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="postTitle" 
+                        class="form-input headline-input" 
+                        placeholder="Write headline here..." 
+                        required>
+                </div>
+
+                <!-- 3. Category Tag Selector -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Category Tag
+                    </label>
+                    <input type="hidden" id="selectedTag" value="Punjab">
+                    <div class="tags-scroll-container">
+                        <button type="button" class="tag-pill active" data-val="Punjab">Punjab</button>
+                        <button type="button" class="tag-pill" data-val="Politics">Politics</button>
+                        <button type="button" class="tag-pill" data-val="Breaking">Breaking</button>
+                        <button type="button" class="tag-pill" data-val="Local News">Local News</button>
+                        <button type="button" class="tag-pill" data-val="Religion">Religion</button>
+                        <button type="button" class="tag-pill" data-val="Sports">Sports</button>
+                        <button type="button" class="tag-pill" data-val="Business">Business</button>
+                    </div>
+                </div>
+
+                <!-- 4. Full Description / Content Box -->
+                <div class="form-group">
+                    <label class="form-label" for="postContent">
+                        Full Description / Content *
+                    </label>
+                    <textarea 
+                        id="postContent" 
+                        class="form-textarea" 
+                        placeholder="Write full article description here..." 
+                        required></textarea>
+                </div>
+
+                <!-- 5. Author Name Box -->
+                <div class="form-group">
+                    <label class="form-label" for="postAuthor">
+                        Author Name
+                    </label>
+                    <input 
+                        type="text" 
+                        id="postAuthor" 
+                        class="form-input" 
+                        value="vicky suri" 
+                        placeholder="vicky suri" 
+                        required>
+                </div>
+
+                <!-- 6. Publish Action Button -->
+                <button type="submit" id="publishBtn" class="btn-publish">
+                    <span>Publish News</span>
+                    <span>🚀</span>
+                </button>
+            </form>
+        </main>
+
+        <!-- ── TAB 2: NEWS MANAGEMENT ── -->
+        <section id="tab-news" class="tab-content">
+            <div class="section-intro">
+                <h2>All News Articles</h2>
+                <p>Tap any article to preview full story • Delete button to remove.</p>
+            </div>
+
+            <!-- Stats & Refresh Row -->
+            <div class="news-header-meta">
+                <span id="newsCountDisplay">Loading stories...</span>
+                <button 
+                    type="button" 
+                    onclick="loadArticles()" 
+                    style="background: none; border: none; font-size: 12px; font-weight: 700; color: var(--brand-primary); cursor: pointer;">
+                    🔄 Refresh Feed
+                </button>
+            </div>
+
+            <!-- News List (Tap card to open full preview modal) -->
+            <div id="newsListContainer" class="news-list">
+                <!-- Dynamically populated via admin.js -->
+            </div>
+        </section>
+
+        <!-- ── Fixed Floating Bottom Navigation Bar ── -->
+        <nav class="bottom-nav">
+            <button type="button" class="nav-item active" data-tab="new-post">
+                <span class="nav-icon">✏️</span>
+                <span>New Post</span>
+            </button>
+            <button type="button" class="nav-item" data-tab="news">
+                <span class="nav-icon">📰</span>
+                <span>News</span>
+                <span id="newsNavBadge" class="nav-badge-count">...</span>
+            </button>
+        </nav>
+
+        <!-- ── Full Article Preview Modal Sheet ── -->
+        <div id="articleDetailModal" class="article-modal-overlay">
+            <div class="article-modal-container">
+                <!-- Sticky Top Header with Cross Button -->
+                <div class="article-modal-header">
+                    <span class="article-modal-title-bar">📰 Article Preview</span>
+                    <button type="button" class="modal-close-cross-btn" title="Close" onclick="closeArticleModal()">✕</button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="article-modal-body">
+                    <div class="article-modal-image-wrap">
+                        <img id="modalArticleImg" src="" alt="Article Image">
+                    </div>
+                    <span id="modalArticleBadge" class="news-badge" style="align-self: flex-start; font-size: 11px; padding: 4px 10px;">Punjab</span>
+                    <h2 id="modalArticleTitle" class="article-modal-headline">Article Title</h2>
+                    <div id="modalArticleMeta" class="article-modal-meta-row">
+                        <!-- Author, Date, Views -->
+                    </div>
+                    <div id="modalArticleBody" class="article-modal-text">
+                        <!-- Full article body paragraphs and images -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Delete Confirmation Modal ── -->
+        <div id="deleteModal" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="modal-icon-danger">🗑️</div>
+                <h3>Delete News Article</h3>
+                <p id="deleteModalMsg">Are you sure you want to permanently delete this news article?</p>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="button" class="modal-btn-confirm" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Toast Notification Element ── -->
+        <div id="toastBox" class="toast-box">Notification</div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="admin.js"></script>
+</body>
+</html>

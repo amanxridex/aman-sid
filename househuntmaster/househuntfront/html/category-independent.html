@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Independent Houses | HouseHunt</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/category-independent.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../js/transitions.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+    <div class="seo-content" style="position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">
+        <h2>About this Category</h2>
+        <p>Find spacious independent houses and builder floors tailored for families seeking privacy and comfort. HouseHunt provides a curated list of verified independent properties with zero brokerage. Enjoy features like private terraces, multiple floors, and prime neighborhood connectivity.</p>
+    </div>
+
+        <header class="category-header">
+            <button onclick="if(document.referrer && document.referrer !== window.location.href) { window.history.back(); } else { window.location.href = '../index.html'; }" class="back-btn"><i data-lucide="arrow-left"></i></button>
+            <h1>Independent Houses</h1>
+            <div style="width: 40px;"></div> <!-- Spacer -->
+        </header>
+
+        <!-- Mode Toggle -->
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="Buy">Buy</button>
+            <button class="mode-btn" data-mode="Rent">Rent</button>
+        </div>
+
+        <div class="search-section" style="display: flex; align-items: center; gap: 10px; padding: 0 20px;">
+            <div class="search-bar" style="flex: 1; background: #eee; padding: 10px 15px; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="search" style="width: 18px; color: #666;"></i>
+                <input type="text" id="propertySearch" placeholder="Search locality..." style="border: none; background: transparent; outline: none; font-size: 14px; flex: 1;">
+            </div>
+            <button class="filter-btn" id="openFilter"><i data-lucide="sliders-horizontal"></i></button>
+        </div>
+
+        <!-- Bottom Sheet Filters -->
+        <div class="bottom-sheet-overlay" id="sheetOverlay"></div>
+        <div class="bottom-sheet" id="filterSheet">
+            <div class="bottom-sheet-header">
+                <h2>Filters</h2>
+                <button class="close-sheet" id="closeFilter"><i data-lucide="x"></i></button>
+            </div>
+            
+            <!-- Quick Chips (Dynamic) -->
+            <div class="quick-chips" id="quickChips"></div>
+
+            <div id="filterContent">
+                <!-- Dynamic mode-specific filters will be injected here -->
+            </div>
+
+            <button class="apply-btn" id="applyFilters">Apply Filters</button>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Nearest Section -->
+            <div class="nearest-section" id="nearestSection">
+                <div class="section-title">Nearest to you</div>
+                <div class="nearest-scroll" id="nearestList">
+                    <!-- Dynamic "Nearest" cards will be injected here -->
+                </div>
+            </div>
+
+            <div class="results-info" style="margin-bottom: 15px;">
+                <span id="resultsCount">Loading...</span>
+            </div>
+            
+            <div id="propertyList" class="bento-grid">
+                <!-- Bento cards will be injected here -->
+            </div>
+
+            <!-- Standard List Section -->
+            <div class="standard-list-section" id="standardSection">
+                <div class="section-title">More Properties</div>
+                <div id="standardList">
+                    <!-- Standard cards will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script type="module" src="../js/category-independent.js"></script>
+    <script>lucide.createIcons();</script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

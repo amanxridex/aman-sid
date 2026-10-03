@@ -1,0 +1,22 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/noida", "destination": "/html/noida" },
+    { "source": "/gurgaon", "destination": "/html/gurgaon" },
+    { "source": "/delhi", "destination": "/html/delhi" },
+    { "source": "/faridabad", "destination": "/html/faridabad" },
+    { "source": "/ghaziabad", "destination": "/html/ghaziabad" },
+    { "source": "/greater-noida", "destination": "/html/greater-noida" },
+    { "source": "/about", "destination": "/html/about" },
+    { "source": "/explore", "destination": "/html/explore" },
+    { "source": "/hosttype", "destination": "/html/hosttype" },
+    { "source": "/404ai", "destination": "/html/404ai" },
+    { "source": "/profile", "destination": "/html/profile" },
+    { "source": "/my-properties", "destination": "/html/my-properties" },
+    { "source": "/property-view", "destination": "/html/property-view" },
+    { "source": "/messages", "destination": "/html/messages" },
+    { "source": "/login", "destination": "/html/login" },
+    { "source": "/host-analytics", "destination": "/html/host-analytics" },
+    { "source": "/api/:path*", "destination": "https://backend.househunt.live/api/:path*" }
+  ]
+}

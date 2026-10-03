@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60" fill="none">
+  <g transform="translate(10, 8)">
+    <circle cx="22" cy="22" r="21" stroke="#dc2626" stroke-width="2.5" fill="#fef2f2"/>
+    <path d="M22 6L32 14v16L22 38 12 30V14z" stroke="#dc2626" stroke-width="2" fill="none"/>
+    <path d="M22 13v18M15 18l14 8M29 18l-14 8" stroke="#dc2626" stroke-width="1.5"/>
+  </g>
+  <text x="64" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="900" letter-spacing="0.05em" fill="#14151a">CIOB</text>
+  <text x="64" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="600" letter-spacing="0.06em" fill="#4b5563">CHARTERED BUILDING COMPANY</text>
+</svg>

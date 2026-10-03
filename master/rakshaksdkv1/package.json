@@ -1,0 +1,46 @@
+{
+  "name": "rakshaksdkv1",
+  "version": "1.0.0",
+  "description": "Zero-Trust Local Anti-AI Shield & Workstation Telemetry Scraper Defense SDK",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./next": {
+      "types": "./dist/adapters/next.d.ts",
+      "import": "./dist/adapters/next.js",
+      "require": "./dist/adapters/next.js",
+      "default": "./dist/adapters/next.js"
+    },
+    "./express": {
+      "types": "./dist/adapters/express.d.ts",
+      "import": "./dist/adapters/express.js",
+      "require": "./dist/adapters/express.js",
+      "default": "./dist/adapters/express.js"
+    }
+  },
+  "bin": {
+    "rakshak": "./bin/rakshak.js",
+    "rskc": "./rskc.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "anti-ai",
+    "anti-scraper",
+    "zero-trust",
+    "honeypot",
+    "adversarial-defense",
+    "llm-shield",
+    "bot-defense"
+  ],
+  "author": "Rakshak Security Systems",
+  "license": "Apache-2.0"
+}

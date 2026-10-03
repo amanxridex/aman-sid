@@ -1,0 +1,14 @@
+{
+  "iconDefinitions": {
+    "_rsk": {
+      "iconPath": "./rsk.svg"
+    },
+    "_rskb": {
+      "iconPath": "./rskb.svg"
+    }
+  },
+  "fileExtensions": {
+    "rsk": "_rsk",
+    "rskb": "_rskb"
+  }
+}

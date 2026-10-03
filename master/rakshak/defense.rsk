@@ -1,0 +1,40 @@
+// ============================================================================
+// RAKSHAK SECURITY KNOWLEDGE (RSK)
+// File: defense.rsk (Root Perimeter Defense Policy - Top-Most Gear 01)
+// Target Domain: rakshakus.vercel.app
+// Architecture: Combined Security Knowledge & Human-Discovery Shield
+// ============================================================================
+
+shield RakshakRootPerimeter {
+    // Top-level perimeter endpoints protected by this autonomous policy
+    target: "/*", "/developers/*", "/docs/*", "/api/*", "/pricing/*", "/features/*";
+
+    // Hardware-level anti-tamper invariants
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 60.0;
+    }
+
+    // Network topology & browser fingerprint invariants
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: true;
+        require_asset_waterfall: false;
+        min_waterfall_ratio: 0.20;
+    }
+
+    // Mathematical Information-Theoretic Invariants (Shannon Entropy & Jitter)
+    telemetry {
+        min_path_entropy: 1.5;
+        max_sliding_velocity: 120;
+    }
+
+    // Active Deception Response for Automated AI Extractors
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.32;
+        inject_stego_canary: "RAKSHAK_PROD_ROOT_CANARY_v2_9941";
+        synthesize_decoy: "Deterministic Apparel Decoy Storefront";
+    }
+}

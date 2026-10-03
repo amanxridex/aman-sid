@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Testing & Coverage
+coverage/
+**/coverage/
+
+# Next.js & Build outputs
+.next/
+**/.next/
+out/
+**/out/
+build/
+**/build/
+dist/
+**/dist/
+
+# Python & Virtual Environments
+.venv/
+**/.venv/
+env/
+**/env/
+venv/
+**/venv/
+ENV/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables & Secrets (CRITICAL for GitHub Push Protection)
+.env
+.env*.local
+**/.env
+**/.env*.local
+*.pem
+*.key
+
+# Large Executables & Databases
+*.exe
+*.dll
+*.so
+*.dylib
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & OS files
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+.DS_Store
+Thumbs.db
+
+# Subproject git backups
+.git_backup/
+**/.git_backup/

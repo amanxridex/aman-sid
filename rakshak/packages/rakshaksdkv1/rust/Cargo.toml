@@ -1,0 +1,12 @@
+[package]
+name = "rakshak-core"
+version = "1.0.0"
+edition = "2021"
+authors = ["Rakshak Security Systems"]
+description = "Zero-Trust Anti-AI Shield & Adversarial Vector Inversion Engine in Pure Rust"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]

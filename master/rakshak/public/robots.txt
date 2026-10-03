@@ -1,0 +1,98 @@
+# Robots.txt for rakshakus.vercel.app
+# Rakshak Sovereign Counter-AI Defense Shield (v2.4.1 Sovereign Production)
+# All unconsented automated extraction, LLM training ingestion, and multimodal scraping strictly prohibited.
+
+User-agent: *
+Allow: /
+Allow: /why-rakshak
+Allow: /developers
+Allow: /pricing
+Allow: /radar
+Allow: /download
+Allow: /status
+Allow: /features
+Allow: /docs
+Allow: /founders
+Allow: /privacy
+Allow: /terms
+Allow: /license-policy
+Allow: /zero-telemetry
+Allow: /security-policy
+Allow: /audit
+Disallow: /api/
+Disallow: /apparel
+Disallow: /catalog
+Disallow: /shop
+Disallow: /store
+Disallow: /products
+Disallow: /collections
+Disallow: /trap/
+Disallow: /honeypot/
+Disallow: /private-intel/
+
+# Genuine Search Engine Indexers (Read-only discovery)
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: DuckDuckBot
+User-agent: Baiduspider
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+Disallow: /trap/
+Disallow: /honeypot/
+
+# TIER 3 & 4 AI SCRAPERS & AUTONOMOUS CRAWLERS (UNCONDITIONALLY BLOCKED)
+User-agent: Grok
+User-agent: GrokBot
+User-agent: xai-crawler
+User-agent: xAI
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: Operator
+User-agent: OpenAI-Operator
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: ComputerUse
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: DeepSeekBot
+User-agent: Bytespider
+User-agent: CCBot
+User-agent: Diffbot
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: Amazon-Q
+User-agent: MistralBot
+User-agent: Cohere-ai
+User-agent: Firecrawl
+User-agent: Crawl4AI
+User-agent: Tavily
+User-agent: Exabot
+User-agent: Jina
+User-agent: Scrapy
+User-agent: Apify
+User-agent: BrightData
+User-agent: SemanticScholarBot
+User-agent: StagehandBot
+User-agent: BrowserbaseBot
+User-agent: SteelBot
+User-agent: MultiOn
+User-agent: ImagesiftBot
+User-agent: Seekr
+User-agent: Omgilibot
+User-agent: DataForSeoBot
+User-agent: Barkrowler
+User-agent: VelenPublicWebCrawler
+User-agent: Panscient
+User-agent: Timpibot
+User-agent: AI2Bot
+User-agent: Kangaroo Bot
+User-agent: Sidetrade
+Disallow: /
+
+Sitemap: https://rakshakus.vercel.app/sitemap.xml

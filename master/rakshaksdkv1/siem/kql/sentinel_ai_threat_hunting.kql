@@ -1,0 +1,54 @@
+// ============================================================================
+// RAKSHAK CORE - KUSTO QUERY LANGUAGE (KQL) THREAT HUNTING MATRIX
+// Platform: Microsoft Sentinel / Azure Monitor / Defender for Cloud
+// Target: Detection of stealth AI crawlers, clockwork jitter, & missing waterfalls
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// 1. Hunt: Clockwork Inter-Arrival Timing Anomaly (stdDev < 65ms)
+// Identifies automated bot loops with programmatic delays masquerading as humans
+// ----------------------------------------------------------------------------
+W3CIISLog
+| where TimeGenerated > ago(1h)
+| summarize RequestCount = count(),
+            TimeDeltas = make_list(TimeGenerated) by cIP, csUserAgent
+| where RequestCount >= 20
+| mv-apply PrevTime = array_shift_right(TimeDeltas, 1) to typeof(datetime),
+           CurrTime = TimeDeltas to typeof(datetime) on (
+               extend DeltaMs = datetime_diff('millisecond', CurrTime, PrevTime)
+           )
+| where isnotnull(DeltaMs)
+| summarize AvgDelta = avg(DeltaMs),
+            StdDevDelta = stdev(DeltaMs),
+            TotalRequests = count() by cIP, csUserAgent
+| where TotalRequests >= 15 and StdDevDelta < 65.0
+| extend ThreatScore = 95, DetectionRule = "CLOCKWORK_BOT_CADENCE_DETECTED"
+| project cIP, csUserAgent, TotalRequests, AvgDelta, StdDevDelta, ThreatScore, DetectionRule;
+
+// ----------------------------------------------------------------------------
+// 2. Hunt: Zero-Signature Asset Waterfall Void (Scrapers fetching 0 CSS/JS/images)
+// ----------------------------------------------------------------------------
+AppServiceHTTPLogs
+| where TimeGenerated > ago(2h)
+| extend Path = tolower(CsUriStem)
+| extend IsSubResource = Path matches regex @"\.(css|js|woff2|png|jpg|svg|ico)$"
+| summarize TotalDocs = countif(not(IsSubResource)),
+            TotalAssets = countif(IsSubResource) by CIp, UserAgent
+| where TotalDocs >= 8 and TotalAssets == 0
+| extend SubresourceRatio = round(toreal(TotalAssets) / toreal(TotalDocs), 2)
+| extend ThreatScore = 90, DetectionRule = "MISSING_ASSET_WATERFALL_HEADLESS_EXTRACTOR"
+| project CIp, UserAgent, TotalDocs, TotalAssets, SubresourceRatio, ThreatScore, DetectionRule;
+
+// ----------------------------------------------------------------------------
+// 3. Hunt: Cloud Datacenter ASN Traffic Claiming Desktop Browsers
+// ----------------------------------------------------------------------------
+AzureDiagnostics
+| where Category == "FrontDoorWebApplicationFirewallLog"
+| where TimeGenerated > ago(24h)
+| extend AsnNumber = tostring(asn_s)
+| extend UserAgent = tostring(userAgent_s)
+| where AsnNumber in ("16509", "15169", "8075", "24940", "14061", "31898")
+| where UserAgent has "Windows NT 10.0" and UserAgent has "Chrome"
+| summarize HitCount = count(), EndpointsTargeted = dcount(requestUrl_s) by clientIP_s, AsnNumber, UserAgent
+| extend ThreatScore = 85, DetectionRule = "DATACENTER_PROXY_SPOOFED_DESKTOP_BROWSER"
+| order by HitCount desc;

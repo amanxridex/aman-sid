@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"/>
+    <meta name="theme-color" content="#0F172A"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <title>InPunjab News – ਪੰਜਾਬ ਦੀ ਆਵਾਜ਼</title>
+    <meta name="description" content="InPunjab News - Leading digital news platform bringing breaking news, regional politics, culture, and ground reality from Punjab."/>
+    
+    <!-- Open Graph / Meta -->
+    <meta property="og:title" content="InPunjab News – ਪੰਜਾਬ ਦੀ ਆਵਾਜ਼" />
+    <meta property="og:description" content="Leading digital news platform bringing breaking news from Punjab." />
+    <meta property="og:image" content="OFFICIAL LOGO.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    
+    <!-- Editorial Minimalist Stylesheet -->
+    <link href="index.css?v=3.0" rel="stylesheet"/>
+    
+    <!-- Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-9624803444729340">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9624803444729340" crossorigin="anonymous"></script>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- ── Mobile Drawer Navigation Menu ── -->
+    <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" onclick="toggleMobileNav()"></div>
+    <div class="mobile-drawer-panel" id="mobileDrawerPanel">
+        <div class="drawer-header">
+            <img src="OFFICIAL LOGO.png" alt="InPunjab News" class="drawer-logo" onerror="this.src='INPUNJABNEWSLOGO.png'">
+            <button type="button" class="drawer-close-btn" onclick="toggleMobileNav()" title="Close Menu">✕</button>
+        </div>
+        <div class="drawer-search">
+            <input type="text" id="drawerSearchInput" placeholder="Search news, topics..." onkeydown="if(event.key==='Enter') doDrawerSearch()"/>
+            <button type="button" onclick="doDrawerSearch()">🔍</button>
+        </div>
+        <div class="drawer-nav-list">
+            <a href="index.html" class="drawer-link active" onclick="toggleMobileNav()">🏠 Home</a>
+            <a href="index.html#lead-hero" class="drawer-link text-red" onclick="toggleMobileNav()">🔴 Breaking News</a>
+            <a href="index.html#visual-stories" class="drawer-link" onclick="toggleMobileNav()">⚡ Web Stories</a>
+            <a href="index.html#punjab-section" class="drawer-link" onclick="toggleMobileNav()">🌾 Punjab News</a>
+            <a href="panchaang.html" class="drawer-link text-gold">🕉️ Daily Panchaang</a>
+            <a href="index.html#latest-stream" class="drawer-link" onclick="filterCategory('Politics'); toggleMobileNav()">⚖️ Politics</a>
+            <a href="index.html#latest-stream" class="drawer-link" onclick="filterCategory('National'); toggleMobileNav()">🇮🇳 National</a>
+            <a href="index.html#latest-stream" class="drawer-link" onclick="filterCategory('Agriculture'); toggleMobileNav()">🚜 Kisaan & Agriculture</a>
+            <a href="index.html#latest-stream" class="drawer-link" onclick="filterCategory('Sports'); toggleMobileNav()">🤼 Sports & Kabaddi</a>
+            <a href="index.html#latest-stream" class="drawer-link" onclick="filterCategory('NRI'); toggleMobileNav()">✈️ NRI Desk</a>
+        </div>
+        <div class="drawer-footer">
+            <div class="drawer-lang-row">
+                <span>Language:</span>
+                <button type="button" onclick="changeLanguage('pa'); toggleMobileNav()">ਪੰਜਾਬੀ</button>
+                <button type="button" onclick="changeLanguage('hi'); toggleMobileNav()">हिन्दी</button>
+                <button type="button" onclick="changeLanguage('en'); toggleMobileNav()">Eng</button>
+            </div>
+            <p>© 2026 InPunjab News • Vicky Suri</p>
+        </div>
+    </div>
+    <!-- ── 1. Top Utility Bar ── -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-inner">
+                <div class="top-bar-left">
+                    <span class="live-pill"><span class="live-dot"></span> LIVE</span>
+                    <span id="datetimeDisplay">Loading date...</span>
+                    <span class="weather-chip" id="weatherChandigarh">🌤️ Chandigarh 29°C</span>
+                    <span class="weather-chip" id="weatherJalandhar">🌤️ Jalandhar 30°C</span>
+                </div>
+                <div class="top-bar-right">
+                    <a href="#" onclick="changeLanguage('pa'); return false;">ਪੰਜਾਬੀ</a>
+                    <a href="#" onclick="changeLanguage('hi'); return false;">हिन्दी</a>
+                    <a href="#" onclick="changeLanguage('en'); return false;">English</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 2. Main Editorial Header ── -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-row">
+                <a href="index.html" class="logo-link" title="InPunjab News Home">
+                    <img src="OFFICIAL LOGO.png" alt="InPunjab News Logo" class="portal-logo" onerror="this.src='INPUNJABNEWSLOGO.png'"/>
+                </a>
+                
+                <div class="header-center-info">
+                    <span class="portal-tagline">ਪੰਜਾਬ ਦੀ ਨਿਰਪੱਖ ਤੇ ਬੇਬਾਕ ਆਵਾਜ਼</span>
+                    <span class="portal-date-stamp" id="headerDateStamp">Punjab's Most Trusted Digital News</span>
+                </div>
+
+                <div class="header-right-actions">
+                    <div class="header-search-form">
+                        <input type="text" id="globalSearchInput" placeholder="Search news, topics..." onkeydown="if(event.key==='Enter') doSearch()"/>
+                        <button type="button" onclick="doSearch()" title="Search">🔍</button>
+                    </div>
+                    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>
+                    <button class="mobile-nav-toggle" id="mobileNavToggle" onclick="toggleMobileNav()" title="Menu">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── 3. Primary Navigation Bar ── -->
+    <nav class="primary-nav-bar" id="primaryNavBar">
+        <div class="container">
+            <div class="nav-links-scroll">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="#lead-hero" class="nav-link breaking-link">🔴 Breaking News</a>
+                <a href="#visual-stories" class="nav-link">⚡ Web Stories</a>
+                <a href="#punjab-section" class="nav-link">🌾 Punjab</a>
+                <a href="panchaang.html" class="nav-link panchaang-link">🕉️ Daily Panchaang</a>
+                <a href="#latest-stream" class="nav-link" onclick="filterCategory('Politics')">Politics</a>
+                <a href="#latest-stream" class="nav-link" onclick="filterCategory('National')">National</a>
+                <a href="#latest-stream" class="nav-link" onclick="filterCategory('Agriculture')">Kisaan</a>
+                <a href="#latest-stream" class="nav-link" onclick="filterCategory('Sports')">Sports</a>
+                <a href="#latest-stream" class="nav-link" onclick="filterCategory('NRI')">NRI Desk</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── 4. Breaking News Ticker (Aaj Tak Style) ── -->
+    <div class="breaking-ticker-wrap">
+        <div class="ticker-heading">
+            <span class="badge-dot"></span>
+            <span>🔴 BREAKING NEWS</span>
+        </div>
+        <div class="ticker-content">
+            <div class="ticker-track" id="breakingTickerTrack">
+                <span><span class="ticker-bolt">⚡</span><a href="article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d">ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ: ਬੀ.ਐਲ. ਸੰਤੋਸ਼</a></span>
+                <span><span class="ticker-bolt">⚡</span><a href="article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7">ਸਫ਼ਾਈ ਕਰਮਚਾਰੀਆਂ ਲਈ ਕਾਨੂੰਨ ਲਿਆਵੇਗੀ ਮੋਦੀ ਸਰਕਾਰ : ਹਰਦੀਪ ਗਿੱਲ</a></span>
+                <span><span class="ticker-bolt">⚡</span><a href="article.html?id=2da421fa-e2cf-413c-8ae8-43fa76ea0cc7">ਅਮਿਤ ਸ਼ਾਹ ਦੀ ਜਲੰਧਰ ਮਹਾਰੈਲੀ ਪੰਜਾਬ ਵਿੱਚ ਬਦਲਾਅ ਦਾ ਸ਼ੰਖਨਾਦ ਬਣੇਗੀ</a></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 5. Lead Hero Package (Aaj Tak 3-Column Editorial Grid) ── -->
+    <section class="lead-hero-section" id="lead-hero">
+        <div class="container">
+            <div class="editorial-lead-grid" id="dynamicLeadHero">
+                <!-- 1. Main Lead Cover Article -->
+                <article class="main-lead-card" onclick="window.location.href='article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d'">
+                    <div class="lead-media-wrap">
+                        <span class="lead-badge-overlay"><span class="badge-dot"></span> 🔴 ਬ੍ਰੇਕਿੰਗ EXCLUSIVE</span>
+                        <img src="main50.jpeg" alt="ਬੀ.ਐਲ. ਸੰਤੋਸ਼ ਦੀ ਜਲੰਧਰ ਫੇਰੀ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    </div>
+                    <div class="lead-content">
+                        <span class="meta-category-badge">Punjab Special</span>
+                        <h1 class="lead-headline-title">ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ, ਭਾਜਪਾ ਬਣੇਗੀ ਪੰਜਾਬ ਦੀ ਆਵਾਜ਼: ਬੀ.ਐਲ. ਸੰਤੋਸ਼</h1>
+                        <p class="lead-excerpt">ਕਾਂਗਰਸ ਵਿਰੋਧੀ ਧਿਰ ਦੀ ਭੂਮਿਕਾ ਨਿਭਾਉਣ ’ਚ ਨਾਕਾਮ, ਪੰਜਾਬ ਦੇ ਲੋਕਾਂ ਦਾ ਸਹਾਰਾ ਬਣੇਗੀ ਭਾਜਪਾ। ਪੰਜ ਮਹੀਨਿਆਂ ਵਿੱਚ ਮਜ਼ਬੂਤ ਟੀਮ ਤਿਆਰ ਕਰੋ, ਹਰ ਬੂਥ ’ਤੇ ਸਰਗਰਮ ਕਮੇਟੀਆਂ ਬਣਾਓ।</p>
+                        <div class="lead-meta-footer">
+                            <span>✍️ By Vicky Suri (Editor-in-Chief)</span>
+                            <span>• 2 hrs ago</span>
+                            <span>• 👁️ 1,420 views</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2. Sub-Featured Column (2 stacked cards) -->
+                <div class="sub-featured-stack">
+                    <article class="sub-lead-card" onclick="window.location.href='article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'">
+                        <div class="sub-media-wrap">
+                            <img src="main48.jpeg" alt="ਸਫ਼ਾਈ ਕਰਮਚਾਰੀ ਕਮਿਸ਼ਨ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                        </div>
+                        <div class="sub-lead-content">
+                            <span style="font-size: 10px; font-weight: 800; color: var(--brand-red); text-transform: uppercase;">Ground Report</span>
+                            <h2 class="sub-lead-title">ਰਾਸ਼ਟਰੀ ਸਫ਼ਾਈ ਕਰਮਚਾਰੀ ਕਮਿਸ਼ਨ ਦੇ ਹਰਦੀਪ ਗਿੱਲ ਨੇ ਜਲੰਧਰ ਨਗਰ ਨਿਗਮ ਦੀਆਂ ਯੂਨੀਅਨਾਂ ਨਾਲ ਕੀਤੀ ਮੀਟਿੰਗ</h2>
+                            <div class="sub-lead-meta">3 hrs ago • By Vicky Suri</div>
+                        </div>
+                    </article>
+
+                    <article class="sub-lead-card" onclick="window.location.href='article.html?id=2da421fa-e2cf-413c-8ae8-43fa76ea0cc7'">
+                        <div class="sub-media-wrap">
+                            <img src="main46.jpeg" alt="ਅਮਿਤ ਸ਼ਾਹ ਮਹਾਰੈਲੀ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                        </div>
+                        <div class="sub-lead-content">
+                            <span style="font-size: 10px; font-weight: 800; color: var(--brand-saffron); text-transform: uppercase;">Mega Rally</span>
+                            <h2 class="sub-lead-title">ਅਮਿਤ ਸ਼ਾਹ ਦੀ ਜਲੰਧਰ ਮਹਾਰੈਲੀ ਪੰਜਾਬ ਵਿੱਚ ਬਦਲਾਅ ਦਾ ਸ਼ੰਖਨਾਦ ਬਣੇਗੀ : ਅਸ਼ੋਕ ਸਰੀਨ ਹਿੱਕੀ</h2>
+                            <div class="sub-lead-meta">5 hrs ago • By Vicky Suri</div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- 3. Top Updates Column ("ਬੜੀਆਂ ਖ਼ਬਰਾਂ" Aaj Tak Ordered List) -->
+                <div class="top-updates-box">
+                    <div class="block-title-header">
+                        <h3><span class="accent-pill"></span> ਬੜੀਆਂ ਖ਼ਬਰਾਂ • Top Stories</h3>
+                        <span style="font-size: 10px; font-weight: 800; color: var(--brand-red);">LIVE</span>
+                    </div>
+                    <div class="top-updates-list">
+                        <div class="ranked-news-item" onclick="window.location.href='article.html?id=c7c9e388-8fe3-43ce-aafd-b23ab6b267b4'">
+                            <span class="rank-number">1</span>
+                            <div>
+                                <div class="ranked-news-title">ਪ੍ਰਧਾਨ ਮੰਤਰੀ ਮੋਦੀ ਦੇ ਜਨਮ ਦਿਵਸ ਮੌਕੇ ਭਾਜਪਾ ਦੇ 14 ਮੰਡਲਾਂ ਵਿੱਚ ਹੋਣਗੇ ਸੇਵਾ ਕਾਰਜ</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">🕒 1 hr ago</div>
+                            </div>
+                        </div>
+                        <div class="ranked-news-item" onclick="window.location.href='article.html?id=f5b4afe5-a2cb-4384-a4ce-7874bbd0aafb'">
+                            <span class="rank-number">2</span>
+                            <div>
+                                <div class="ranked-news-title">ਮਾਸਟਰ ਤਾਰਾ ਸਿੰਘ ਨਗਰ 'ਚ ਸਰਕਾਰੀ ਜ਼ਮੀਨ 'ਤੇ ਕਬਜ਼ੇ ਦੇ ਦੋਸ਼, ਨਿਗਮ 'ਤੇ ਸਵਾਲ</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">🕒 2 hrs ago</div>
+                            </div>
+                        </div>
+                        <div class="ranked-news-item" onclick="window.location.href='article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d'">
+                            <span class="rank-number">3</span>
+                            <div>
+                                <div class="ranked-news-title">ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ: ਬੀ.ਐਲ. ਸੰਤੋਸ਼</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">🕒 3 hrs ago</div>
+                            </div>
+                        </div>
+                        <div class="ranked-news-item" onclick="window.location.href='article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'">
+                            <span class="rank-number">4</span>
+                            <div>
+                                <div class="ranked-news-title">ਸਫ਼ਾਈ ਕਰਮਚਾਰੀਆਂ ਦੇ ਹੱਕਾਂ ਲਈ ਕਾਨੂੰਨ ਲਿਆਵੇਗੀ ਮੋਦੀ ਸਰਕਾਰ : ਹਰਦੀਪ ਗਿੱਲ</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">🕒 4 hrs ago</div>
+                            </div>
+                        </div>
+                        <div class="ranked-news-item" onclick="window.location.href='article.html?id=2da421fa-e2cf-413c-8ae8-43fa76ea0cc7'">
+                            <span class="rank-number">5</span>
+                            <div>
+                                <div class="ranked-news-title">ਅਮਿਤ ਸ਼ਾਹ ਦੀ ਜਲੰਧਰ ਰੈਲੀ ਪੰਜਾਬ 'ਚ ਜੰਗਲਰਾਜ ਖ਼ਿਲਾਫ਼ ਨਿਰਣਾਇਕ ਬਿਗੁਲ</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">🕒 5 hrs ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 5B. Interactive Category Filter Ribbon & District Desk Bar ── -->
+    <section class="portal-mid-bar-section">
+        <div class="container">
+            <!-- Punjab District Desk Bar -->
+            <div class="district-desk-bar">
+                <span class="district-title">📍 ਜ਼ਿਲ੍ਹਾ ਡੈਸਕ:</span>
+                <div class="district-chips-scroll">
+                    <button type="button" class="district-chip active" onclick="filterDistrict('All')">All Punjab</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Jalandhar')">ਜਲੰਧਰ (Jalandhar)</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Amritsar')">ਅੰਮ੍ਰਿਤਸਰ (Amritsar)</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Ludhiana')">ਲੁਧਿਆਣਾ (Ludhiana)</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Patiala')">ਪਟਿਆਲਾ (Patiala)</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Bathinda')">ਬਠਿੰਡਾ (Bathinda)</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Mohali')">ਮੋਹਾਲੀ / Chandigarh</button>
+                    <button type="button" class="district-chip" onclick="filterDistrict('Gurdaspur')">ਗੁਰਦਾਸਪੁਰ (Gurdaspur)</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Category Filter Pills -->
+            <div class="category-pills-bar">
+                <button type="button" class="cat-pill active" onclick="filterCategory('All', this)">
+                    <span class="cat-dot"></span> All Stories
+                </button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Punjab', this)">🌾 Punjab Special</button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Politics', this)">⚖️ Politics</button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Breaking', this)">🚨 Breaking Alerts</button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Agriculture', this)">🚜 Kisaan & Agri</button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Local News', this)">🏙️ Ground Reports</button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Religion', this)">🕉️ Religion & Culture</button>
+                <button type="button" class="cat-pill" onclick="filterCategory('Sports', this)">🤼 Sports & Kabaddi</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 5C. Visual Web Stories Reel (Aaj Tak / NDTV Shorts Style) ── -->
+    <section class="visual-stories-section" id="visual-stories">
+        <div class="container">
+            <div class="section-heading-bar">
+                <h2>
+                    <span class="stories-pulse-icon">⚡</span> 
+                    Visual Stories • ਵੈੱਬ ਸਟੋਰੀਜ਼
+                </h2>
+                <span class="stories-badge-pill">Bite-sized News</span>
+            </div>
+            
+            <div class="visual-stories-scroll" id="dynamicVisualStories">
+                <div class="story-card-reel" onclick="window.location.href='article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d'">
+                    <img class="story-bg-media" src="main50.jpeg" alt="ਬੀ.ਐਲ. ਸੰਤੋਸ਼" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    <div class="story-scrim">
+                        <div class="story-top-row">
+                            <span class="story-tag">Punjab</span>
+                            <div class="story-play-icon">▶</div>
+                        </div>
+                        <div class="story-bottom-content">
+                            <h4 class="story-headline">ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ: ਬੀ.ਐਲ. ਸੰਤੋਸ਼</h4>
+                            <div class="story-meta"><span>⏱️ 1m read</span><span>• Recent</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="story-card-reel" onclick="window.location.href='article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'">
+                    <img class="story-bg-media" src="main48.jpeg" alt="ਹਰਦੀਪ ਗਿੱਲ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    <div class="story-scrim">
+                        <div class="story-top-row">
+                            <span class="story-tag">Exclusive</span>
+                            <div class="story-play-icon">▶</div>
+                        </div>
+                        <div class="story-bottom-content">
+                            <h4 class="story-headline">ਸਫ਼ਾਈ ਕਰਮਚਾਰੀਆਂ ਲਈ ਕਾਨੂੰਨ ਲਿਆਵੇਗੀ ਮੋਦੀ ਸਰਕਾਰ : ਹਰਦੀਪ ਗਿੱਲ</h4>
+                            <div class="story-meta"><span>⏱️ 1m read</span><span>• Recent</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="story-card-reel" onclick="window.location.href='article.html?id=2da421fa-e2cf-413c-8ae8-43fa76ea0cc7'">
+                    <img class="story-bg-media" src="main46.jpeg" alt="ਅਮਿਤ ਸ਼ਾਹ ਰੈਲੀ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    <div class="story-scrim">
+                        <div class="story-top-row">
+                            <span class="story-tag">Rally</span>
+                            <div class="story-play-icon">▶</div>
+                        </div>
+                        <div class="story-bottom-content">
+                            <h4 class="story-headline">ਅਮਿਤ ਸ਼ਾਹ ਦੀ ਜਲੰਧਰ ਮਹਾਰੈਲੀ ਪੰਜਾਬ ਵਿੱਚ ਬਦਲਾਅ ਦਾ ਸ਼ੰਖਨਾਦ ਬਣੇਗੀ</h4>
+                            <div class="story-meta"><span>⏱️ 1m read</span><span>• Recent</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="story-card-reel" onclick="window.location.href='article.html?id=c7c9e388-8fe3-43ce-aafd-b23ab6b267b4'">
+                    <img class="story-bg-media" src="main45.jpeg" alt="ਸੇਵਾ ਕਾਰਜ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    <div class="story-scrim">
+                        <div class="story-top-row">
+                            <span class="story-tag">Sewa</span>
+                            <div class="story-play-icon">▶</div>
+                        </div>
+                        <div class="story-bottom-content">
+                            <h4 class="story-headline">ਪ੍ਰਧਾਨ ਮੰਤਰੀ ਮੋਦੀ ਦੇ ਜਨਮ ਦਿਵਸ ਮੌਕੇ 14 ਮੰਡਲਾਂ ਵਿੱਚ ਹੋਣਗੇ ਸੇਵਾ ਕਾਰਜ</h4>
+                            <div class="story-meta"><span>⏱️ 1m read</span><span>• Recent</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="story-card-reel" onclick="window.location.href='article.html?id=f5b4afe5-a2cb-4384-a4ce-7874bbd0aafb'">
+                    <img class="story-bg-media" src="main41.jpeg" alt="ਮਾਸਟਰ ਤਾਰਾ ਸਿੰਘ ਨਗਰ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    <div class="story-scrim">
+                        <div class="story-top-row">
+                            <span class="story-tag">Jalandhar</span>
+                            <div class="story-play-icon">▶</div>
+                        </div>
+                        <div class="story-bottom-content">
+                            <h4 class="story-headline">ਮਾਸਟਰ ਤਾਰਾ ਸਿੰਘ ਨਗਰ 'ਚ ਸਰਕਾਰੀ ਜ਼ਮੀਨ 'ਤੇ ਕਬਜ਼ੇ ਦੇ ਦੋਸ਼</h4>
+                            <div class="story-meta"><span>⏱️ 1m read</span><span>• Recent</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 6. Regional Spotlight: 🌾 Punjab News (4-Card Uniform Grid) ── -->
+    <section class="punjab-news-section" id="punjab-section">
+        <div class="container">
+            <div class="section-heading-bar">
+                <h2>🌾 Punjab News • ਪੰਜਾਬ ਦੀਆਂ ਖ਼ਾਸ ਖ਼ਬਰਾਂ</h2>
+                <a href="#latest-stream" class="section-view-all">View All →</a>
+            </div>
+            <div class="punjab-cards-grid" id="dynamicPunjabGrid">
+                <article class="news-card-editorial" onclick="window.location.href='article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'">
+                    <div class="card-img-wrap">
+                        <img src="main48.jpeg" alt="ਸਫ਼ਾਈ ਕਰਮਚਾਰੀ ਕਮਿਸ਼ਨ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-tag">Punjab</span>
+                        <h3 class="card-title">ਰਾਸ਼ਟਰੀ ਸਫ਼ਾਈ ਕਰਮਚਾਰੀ ਕਮਿਸ਼ਨ ਦੇ ਹਰਦੀਪ ਗਿੱਲ ਨੇ ਜਲੰਧਰ ਨਗਰ ਨਿਗਮ ਦੀਆਂ ਸਫ਼ਾਈ ਯੂਨੀਅਨਾਂ ਨਾਲ ਕੀਤੀ ਮੀਟਿੰਗ</h3>
+                        <div class="card-footer">
+                            <span>Recent</span>
+                            <span>✍️ Vicky Suri</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="news-card-editorial" onclick="window.location.href='article.html?id=2da421fa-e2cf-413c-8ae8-43fa76ea0cc7'">
+                    <div class="card-img-wrap">
+                        <img src="main46.jpeg" alt="ਅਮਿਤ ਸ਼ਾਹ ਰੈਲੀ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-tag">Punjab</span>
+                        <h3 class="card-title">ਅਮਿਤ ਸ਼ਾਹ ਦੀ ਜਲੰਧਰ ਮਹਾਰੈਲੀ ਪੰਜਾਬ ਵਿੱਚ ਬਦਲਾਅ ਦਾ ਸ਼ੰਖਨਾਦ ਬਣੇਗੀ : ਅਸ਼ੋਕ ਸਰੀਨ ਹਿੱਕੀ</h3>
+                        <div class="card-footer">
+                            <span>Recent</span>
+                            <span>✍️ Vicky Suri</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="news-card-editorial" onclick="window.location.href='article.html?id=c7c9e388-8fe3-43ce-aafd-b23ab6b267b4'">
+                    <div class="card-img-wrap">
+                        <img src="main45.jpeg" alt="ਮੋਦੀ ਜਨਮ ਦਿਵਸ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-tag">Punjab</span>
+                        <h3 class="card-title">ਪ੍ਰਧਾਨ ਮੰਤਰੀ ਮੋਦੀ ਦੇ ਜਨਮ ਦਿਵਸ ਮੌਕੇ ਭਾਜਪਾ ਦੇ 14 ਮੰਡਲਾਂ ਵਿੱਚ ਹੋਣਗੇ ਸੇਵਾ ਕਾਰਜ</h3>
+                        <div class="card-footer">
+                            <span>Recent</span>
+                            <span>✍️ Vicky Suri</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="news-card-editorial" onclick="window.location.href='article.html?id=f5b4afe5-a2cb-4384-a4ce-7874bbd0aafb'">
+                    <div class="card-img-wrap">
+                        <img src="main41.jpeg" alt="ਮਾਸਟਰ ਤਾਰਾ ਸਿੰਘ ਨਗਰ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-tag">Punjab</span>
+                        <h3 class="card-title">ਮਾਸਟਰ ਤਾਰਾ ਸਿੰਘ ਨਗਰ 'ਚ ਸਰਕਾਰੀ ਜ਼ਮੀਨ 'ਤੇ ਕਬਜ਼ੇ ਦੇ ਦੋਸ਼, ਨਗਰ ਨਿਗਮ ਦੀ ਕਾਰਜਪ੍ਰਣਾਲੀ 'ਤੇ ਸਵਾਲ</h3>
+                        <div class="card-footer">
+                            <span>Recent</span>
+                            <span>✍️ Vicky Suri</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 7. Main Two-Column Layout (70% News Stream / 30% Sidebar) ── -->
+    <section class="main-two-col-layout" id="latest-stream">
+        <div class="container">
+            <div class="two-col-grid">
+                <!-- Left: News Stream List -->
+                <div class="news-stream-col">
+                    <div class="section-heading-bar">
+                        <h2 id="streamHeading">📰 Latest Updates • ਤਾਜ਼ਾ ਰਿਪੋਰਟਾਂ</h2>
+                        <span id="activeFilterBadge" class="active-filter-badge" style="display:none;">Filtered</span>
+                    </div>
+                    <div class="news-stream-list" id="dynamicStreamList">
+                        <article class="stream-card" onclick="window.location.href='article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d'">
+                            <div class="stream-thumb">
+                                <img src="main50.jpeg" alt="ਬੀ.ਐਲ. ਸੰਤੋਸ਼" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                            </div>
+                            <div class="stream-info">
+                                <div class="stream-tag-row">
+                                    <span class="stream-tag">Punjab</span>
+                                    <span class="stream-date">• Recent</span>
+                                    <span class="stream-date">• ⏱️ 3 min read</span>
+                                </div>
+                                <h3 class="stream-title">ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ, ਭਾਜਪਾ ਬਣੇਗੀ ਪੰਜਾਬ ਦੀ ਆਵਾਜ਼: ਬੀ.ਐਲ. ਸੰਤੋਸ਼</h3>
+                                <p class="stream-brief">ਕਾਂਗਰਸ ਵਿਰੋਧੀ ਧਿਰ ਦੀ ਭੂਮਿਕਾ ਨਿਭਾਉਣ ’ਚ ਨਾਕਾਮ, ਪੰਜਾਬ ਦੇ ਲੋਕਾਂ ਦਾ ਸਹਾਰਾ ਬਣੇਗੀ ਭਾਜਪਾ। ਪੰਜ ਮਹੀਨਿਆਂ ਵਿੱਚ ਮਜ਼ਬੂਤ ਟੀਮ ਤਿਆਰ ਕਰੋ।</p>
+                                <div class="stream-meta">
+                                    <span>✍️ By Vicky Suri</span>
+                                    <span>👁️ 1,420 views</span>
+                                    <button type="button" class="stream-share-btn" onclick="event.stopPropagation(); window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ - InPunjab News\n' + window.location.origin + '/article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d'), '_blank')" title="Share on WhatsApp">
+                                        <span>📲 WhatsApp</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="stream-card" onclick="window.location.href='article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'">
+                            <div class="stream-thumb">
+                                <img src="main48.jpeg" alt="ਹਰਦੀਪ ਗਿੱਲ" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                            </div>
+                            <div class="stream-info">
+                                <div class="stream-tag-row">
+                                    <span class="stream-tag">Punjab</span>
+                                    <span class="stream-date">• Recent</span>
+                                    <span class="stream-date">• ⏱️ 2 min read</span>
+                                </div>
+                                <h3 class="stream-title">ਰਾਸ਼ਟਰੀ ਸਫ਼ਾਈ ਕਰਮਚਾਰੀ ਕਮਿਸ਼ਨ ਦੇ ਹਰਦੀਪ ਗਿੱਲ ਨੇ ਜਲੰਧਰ ਨਗਰ ਨਿਗਮ ਦੀਆਂ ਸਫ਼ਾਈ ਯੂਨੀਅਨਾਂ ਨਾਲ ਕੀਤੀ ਮੀਟਿੰਗ</h3>
+                                <p class="stream-brief">ਸਫ਼ਾਈ ਕਰਮਚਾਰੀਆਂ ਦੇ ਹੱਕਾਂ ਲਈ ਕਾਨੂੰਨ ਲਿਆਵੇਗੀ ਮੋਦੀ ਸਰਕਾਰ : ਗਿੱਲ | ਸਫ਼ਾਈ ਕਰਮਚਾਰੀਆਂ ਦੀਆਂ ਮੰਗਾਂ ਦੇ ਹੱਲ ਲਈ ਡਿਪਟੀ ਕਮਿਸ਼ਨਰ ਨੂੰ ਨਿਰਦੇਸ਼।</p>
+                                <div class="stream-meta">
+                                    <span>✍️ By Vicky Suri</span>
+                                    <span>👁️ 1,180 views</span>
+                                    <button type="button" class="stream-share-btn" onclick="event.stopPropagation(); window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('ਸਫ਼ਾਈ ਕਰਮਚਾਰੀ ਕਮਿਸ਼ਨ - InPunjab News\n' + window.location.origin + '/article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'), '_blank')" title="Share on WhatsApp">
+                                        <span>📲 WhatsApp</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- Right: Clean Minimal Sidebar -->
+                <aside class="editorial-sidebar">
+                    <!-- 🔥 Trending / Most Read Widget -->
+                    <div class="trending-widget-card">
+                        <div class="trending-header">
+                            <h4>🔥 Trending • ਸਭ ਤੋਂ ਵੱਧ ਪੜ੍ਹੀਆਂ</h4>
+                            <span class="trending-tag-live">24H HOT</span>
+                        </div>
+                        <div class="trending-list" id="dynamicTrendingList">
+                            <div class="trending-item" onclick="window.location.href='article.html?id=946f70b4-09c4-45d4-9e08-e387caa6607d'">
+                                <div class="trending-rank">01</div>
+                                <div class="trending-content">
+                                    <h5 class="trending-title">ਆਮ ਆਦਮੀ ਪਾਰਟੀ ਨੇ ਪੰਜਾਬ ਨੂੰ ਹਰ ਪੱਖੋਂ ਬਰਬਾਦ ਕੀਤਾ: ਬੀ.ਐਲ. ਸੰਤੋਸ਼</h5>
+                                    <div class="trending-meta">Recent • 👁️ 1.4k reads</div>
+                                </div>
+                            </div>
+                            <div class="trending-item" onclick="window.location.href='article.html?id=8d3e17d2-751c-44e7-8e1c-99435175aea7'">
+                                <div class="trending-rank">02</div>
+                                <div class="trending-content">
+                                    <h5 class="trending-title">ਸਫ਼ਾਈ ਕਰਮਚਾਰੀਆਂ ਦੇ ਹੱਕਾਂ ਲਈ ਕਾਨੂੰਨ ਲਿਆਵੇਗੀ ਮੋਦੀ ਸਰਕਾਰ : ਹਰਦੀਪ ਗਿੱਲ</h5>
+                                    <div class="trending-meta">Recent • 👁️ 1.2k reads</div>
+                                </div>
+                            </div>
+                            <div class="trending-item" onclick="window.location.href='article.html?id=2da421fa-e2cf-413c-8ae8-43fa76ea0cc7'">
+                                <div class="trending-rank">03</div>
+                                <div class="trending-content">
+                                    <h5 class="trending-title">ਅਮਿਤ ਸ਼ਾਹ ਦੀ ਜਲੰਧਰ ਮਹਾਰੈਲੀ ਪੰਜਾਬ ਵਿੱਚ ਬਦਲਾਅ ਦਾ ਸ਼ੰਖਨਾਦ ਬਣੇਗੀ</h5>
+                                    <div class="trending-meta">Recent • 👁️ 980 reads</div>
+                                </div>
+                            </div>
+                            <div class="trending-item" onclick="window.location.href='article.html?id=c7c9e388-8fe3-43ce-aafd-b23ab6b267b4'">
+                                <div class="trending-rank">04</div>
+                                <div class="trending-content">
+                                    <h5 class="trending-title">ਪ੍ਰਧਾਨ ਮੰਤਰੀ ਮੋਦੀ ਦੇ ਜਨਮ ਦਿਵਸ ਮੌਕੇ ਭਾਜਪਾ ਦੇ 14 ਮੰਡਲਾਂ ਵਿੱਚ ਸੇਵਾ ਕਾਰਜ</h5>
+                                    <div class="trending-meta">Recent • 👁️ 840 reads</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🟢 Official WhatsApp Community Alert Box -->
+                    <div class="whatsapp-alert-card">
+                        <div class="whatsapp-icon-circle">📱</div>
+                        <div class="whatsapp-info">
+                            <h5>Join InPunjab News on WhatsApp</h5>
+                            <p>Get fastest verified breaking news alerts directly on your phone.</p>
+                            <a href="https://whatsapp.com" target="_blank" rel="noopener" class="whatsapp-join-btn">
+                                <span>Join WhatsApp Channel</span>
+                                <span>➔</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Daily Panchaang Widget -->
+                    <div class="panchaang-widget-card">
+                        <div class="panchaang-header">
+                            <h4>🕉️ Daily Panchaang</h4>
+                            <span style="font-size: 11px; opacity: 0.9;">Punjab Edition</span>
+                        </div>
+                        <div class="panchaang-body">
+                            <div class="panchaang-row">
+                                <strong>Date / ਤਿਥੀ:</strong>
+                                <span id="sidebarPanchaangDate">Today's Auspicious Tithi</span>
+                            </div>
+                            <div class="panchaang-row">
+                                <strong>Nakshatra / ਨਕਸ਼ਤਰ:</strong>
+                                <span>Auspicious Muhurat</span>
+                            </div>
+                            <div class="panchaang-row">
+                                <strong>Rahu Kaal / ਰਾਹੂ ਕਾਲ:</strong>
+                                <span style="color: #DC2626;">Check Full Calendar</span>
+                            </div>
+                            <a href="panchaang.html" class="panchaang-btn">View Full Daily Panchaang ➔</a>
+                        </div>
+                    </div>
+
+                    <!-- Clean Single Ad Unit -->
+                    <div class="clean-ad-card">
+                        <div class="ad-disclaimer">Advertisement</div>
+                        <img src="ad5.jpeg" alt="Featured Advertisement" onerror="this.src='AD1.jpeg'">
+                    </div>
+
+                    <!-- Newsletter Subscription Card -->
+                    <div class="newsletter-card">
+                        <h4>Stay Updated with Punjab</h4>
+                        <p>Receive morning headlines and breaking news alerts directly to your inbox.</p>
+                        <div class="newsletter-input-group">
+                            <input type="email" id="newsletterEmailInput" placeholder="Enter your email">
+                            <button type="button" onclick="subscribeNewsletter()">Subscribe</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 8. Minimalist Editorial Footer ── -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <img src="OFFICIAL LOGO.png" alt="InPunjab News" style="height: 44px; margin-bottom: 12px;" onerror="this.src='INPUNJABNEWSLOGO.png'">
+                    <p style="line-height: 1.6; color: #94A3B8;">
+                        InPunjab News brings fearless journalism, ground reality, and verified news covering politics, agriculture, culture, and community developments across Punjab and North India.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h5>Categories</h5>
+                    <ul class="footer-links">
+                        <li><a href="#punjab-section">Punjab Politics</a></li>
+                        <li><a href="#latest-stream">Crime & Law</a></li>
+                        <li><a href="#latest-stream">Agriculture & Farmers</a></li>
+                        <li><a href="panchaang.html">Daily Panchaang</a></li>
+                        <li><a href="#latest-stream">Sports & Kabaddi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="panchaang.html">Panchaang Calendar</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact Editorial Desk</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Editorial Desk</h5>
+                    <p style="color: #94A3B8; margin-bottom: 8px;">
+                        Jalandhar, Punjab, India<br>
+                        <strong>Editor & Owner:</strong> Vicky Suri
+                    </p>
+                    <p style="color: #64748B; font-size: 12px;">Punjab's Most Trusted Digital Newsroom</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 InPunjab News. All Rights Reserved. • Designed with Minimal Editorial Precision.</span>
+                <span>🇮🇳 ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ • Jai Punjab</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── 9. Scripts ── -->
+    <script src="supabaseClient.js"></script>
+    <script src="index.js?v=2.0"></script>
+
+    <!-- Google Translate Support -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'pa', includedLanguages: 'en,hi,pa', autoDisplay: false}, 'google_translate_element');
+        }
+        function changeLanguage(langCode) {
+            var selectField = document.querySelector("select.goog-te-combo");
+            if (selectField) {
+                selectField.value = langCode;
+                selectField.dispatchEvent(new Event('change'));
+            }
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

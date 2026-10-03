@@ -1,0 +1,45 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - AUTOMOTIVE ISO 26262 ASIL-D CAN BUS SHIELD
+// Language: Rakshak Security Kernel (RSK)
+// File: security/automotive_iso26262_canbus.rsk
+// Standard: ISO 26262 ASIL-D & ISO/SAE 21434 Road Vehicles Cybersecurity
+// ==============================================================================
+
+shield AutomotiveIso26262Canbus {
+    target: "/can/powertrain/*", "/can/adas/steering", "/can/braking/abs", "/ethernet/someip/*";
+
+    hardware {
+        require_hardware_security_module: true;
+        enforce_she_or_evita_hsm: true;
+        trap_debugger: true;
+        hardware_watchdog_timeout_ms: 20;
+        enforce_secure_boot_mac: true;
+    }
+
+    automotive {
+        enforce_secoc_freshness_values: true;
+        can_fd_max_payload_bytes: 64;
+        filter_suspicious_arbitration_ids: true;
+        prohibit_diagnostic_uds_in_motion: true;
+        detect_bus_off_injection_attacks: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        quarantine_ota_gateway_until_parked: true;
+        prohibit_raw_socket_bridging: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 403;
+        fallback_action: ISOLATE_CAN_TRANSCEIVER;
+        inject_stego_canary: "AUTOSAR_SECOC_HONEY_CAN_ID_0x7DF";
+        synthesize_decoy: "UDS_NEGATIVE_RESPONSE_SERVICE_NOT_SUPPORTED_IN_ACTIVE_SESSION";
+    }
+
+    rules {
+        assert vehicle.speed_kmh > 0 ? (request.service_id != 0x27) : true; // Block security access seed/key while driving
+        assert packet.dlc <= 8 || packet.is_can_fd == true;
+    }
+}

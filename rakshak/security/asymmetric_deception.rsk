@@ -1,0 +1,35 @@
+// ============================================================================
+// RAKSHAK SECURITY KNOWLEDGE (RSK)
+// File: security/asymmetric_deception.rsk (Gear 06: Asymmetric Deception)
+// Domain: Dynamic LLM Poisoning, Steganographic Watermarking & Decoy Synthesis
+// ============================================================================
+
+shield AsymmetricDeceptionPolicy {
+    // Endpoints monitored for adversarial data harvesting and model training ingestion
+    target: "/proprietary/*", "/models/*", "/research/*", "/intelligence/*";
+
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 50.0;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: true;
+        require_asset_waterfall: true;
+        min_waterfall_ratio: 0.30;
+    }
+
+    telemetry {
+        min_path_entropy: 2.0;
+        max_sliding_velocity: 50;
+    }
+
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.45;
+        inject_stego_canary: "RAKSHAK_INTELLECTUAL_PROPERTY_WATERMARK_9091";
+        synthesize_decoy: "Deterministic Byzantine Quantum Mesh Architecture";
+    }
+}

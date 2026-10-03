@@ -1,0 +1,57 @@
+{
+  "name": "vscode-rakshak",
+  "displayName": "Rakshak Language & Anti-AI Toolchain",
+  "description": "Official language support, syntax highlighting, and file icons for the Rakshak Security Language (.rsk, .rskb)",
+  "version": "1.0.0",
+  "publisher": "rakshak-security",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rakshak/rakshaksdk"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Themes",
+    "Snippets"
+  ],
+  "icon": "icons/rakshak_language_icon.jpg",
+  "contributes": {
+    "languages": [
+      {
+        "id": "rakshak",
+        "aliases": ["Rakshak", "rsk"],
+        "extensions": [".rsk"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/rsk.svg",
+          "dark": "./icons/rsk.svg"
+        }
+      },
+      {
+        "id": "rakshak-bytecode",
+        "aliases": ["Rakshak Bytecode", "rskb"],
+        "extensions": [".rskb"],
+        "icon": {
+          "light": "./icons/rskb.svg",
+          "dark": "./icons/rskb.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "rakshak",
+        "scopeName": "source.rsk",
+        "path": "./syntaxes/rsk.tmLanguage.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "rakshak-icons",
+        "label": "Rakshak File Icons",
+        "path": "./icons/file-icon-theme.json"
+      }
+    ]
+  }
+}

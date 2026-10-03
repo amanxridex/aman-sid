@@ -1,0 +1,516 @@
+document.addEventListener('DOMContentLoaded', async () => {
+    const BACKEND_URL = 'https://backend.househunt.live';
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get('id');
+
+    if (!propertyId) {
+        console.error('No property ID provided');
+        return;
+    }
+
+    const quotes = [
+        "Home is where your story begins.",
+        "The ache for home lives in all of us.",
+        "There is nothing like staying at home for real comfort.",
+        "A house is made of bricks and beams. A home is made of hopes and dreams.",
+        "Finding the perfect property takes time, but it's worth it."
+    ];
+    
+    const loadingQuote = document.getElementById('loadingQuote');
+    if (loadingQuote) {
+        loadingQuote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    let p = null;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const response = await fetch(`${BACKEND_URL}/api/properties`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (response.ok) {
+            const allProperties = await response.json();
+            if (Array.isArray(allProperties)) {
+                p = allProperties.find(item => String(item.id) === String(propertyId));
+            }
+        }
+    } catch (err) {
+        console.warn('Backend unavailable, falling back to local luxury database', err);
+    }
+
+    // Fallback to local data engine
+    if (!p) {
+        if (window.getPropertyById) {
+            p = window.getPropertyById(propertyId);
+        }
+        if (!p && window.propertyData && window.propertyData.length > 0) {
+            p = window.propertyData.find(item => String(item.id) === String(propertyId)) || window.propertyData[0];
+        }
+    }
+
+    if (!p) {
+        console.error('Property not found');
+        const loadingQuote = document.getElementById('loadingQuote');
+        if (loadingQuote) loadingQuote.textContent = "Property not found. Redirecting to listings...";
+        setTimeout(() => window.location.href = '../index.html', 1500);
+        return;
+    }
+
+    // Hide loading screen and show content
+    const loadingScreen = document.getElementById('propertyLoadingScreen');
+    const mainContent = document.getElementById('mainContent');
+    if (loadingScreen) loadingScreen.style.display = 'none';
+    if (mainContent) mainContent.style.display = 'flex';
+
+        // --- Smart Back Button Logic ---
+        const backBtn = document.getElementById('propertyBackButton');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                if (document.referrer && document.referrer !== window.location.href) {
+                    window.history.back();
+                } else {
+                    let categoryUrl = '../index.html';
+                    if (p.property_type) {
+                        const t = p.property_type.toLowerCase();
+                        if (t.includes('independent')) categoryUrl = 'category-independent.html';
+                        else if (t.includes('apartment')) categoryUrl = 'category-apartments.html';
+                        else if (t.includes('villa')) categoryUrl = 'category-villas.html';
+                        else if (t.includes('plot')) categoryUrl = 'category-plots.html';
+                        else if (t.includes('commercial')) categoryUrl = 'category-commercial.html';
+                    }
+                    window.location.href = categoryUrl;
+                }
+            });
+        }
+        // --- Share Button Logic ---
+        const shareBtn = document.getElementById('propertyShareButton');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async () => {
+                const shareData = {
+                    title: p.title || `${p.property_type} in ${p.city}`,
+                    text: `Check out this amazing property on HouseHunt: ${p.location_text || p.location || p.city}`,
+                    url: window.location.href
+                };
+                try {
+                    if (navigator.share) {
+                        await navigator.share(shareData);
+                    } else {
+                        await navigator.clipboard.writeText(window.location.href);
+                        alert("Property link copied to clipboard!");
+                    }
+                } catch(err) {
+                    console.error("Error sharing:", err);
+                }
+            });
+        }
+
+        // --- Basic Info ---
+        let displayPrice = p.price;
+        if (typeof p.price === 'number') {
+            if (p.intent === 'Rent') {
+                displayPrice = `₹ ${p.price.toLocaleString()}/mo`;
+            } else {
+                const inCr = p.price / 10000000;
+                if (inCr >= 1) displayPrice = `₹ ${inCr.toFixed(2)} Cr`;
+                else displayPrice = `₹ ${(p.price / 100000).toFixed(2)} L`;
+            }
+        } else if (!displayPrice || displayPrice.toString().trim() === '') {
+            displayPrice = 'Price on Request';
+        }
+        
+        document.querySelector('.price').textContent = displayPrice;
+        document.querySelector('.type-tag').textContent = `For ${p.intent}`;
+        document.querySelector('.title').textContent = p.title || `${p.property_type} in ${p.city}`;
+        document.querySelector('.location').innerHTML = `<i data-lucide="map-pin"></i> ${p.location_text || p.location || p.city}`;
+        // --- Image Carousel Setup ---
+        const carousel = document.getElementById('imageCarousel');
+        const currentIndexSpan = document.getElementById('currentImageIndex');
+        const totalSpan = document.getElementById('totalImagesCount');
+        
+        let imagesArray = [];
+        if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+            imagesArray = p.images;
+        } else if (p.image) {
+            imagesArray = [p.image];
+        } else {
+            imagesArray = ['../assets/mainappicon.png'];
+        }
+        
+        if (carousel) {
+            carousel.innerHTML = '';
+            imagesArray.forEach((imgUrl, idx) => {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.alt = `Property Image ${idx + 1}`;
+                carousel.appendChild(img);
+            });
+            
+            if (totalSpan) totalSpan.textContent = imagesArray.length;
+            
+            // Update badge on scroll
+            carousel.addEventListener('scroll', () => {
+                const scrollLeft = carousel.scrollLeft;
+                const width = carousel.clientWidth;
+                const activeIndex = Math.round(scrollLeft / width);
+                if (currentIndexSpan) currentIndexSpan.textContent = activeIndex + 1;
+            });
+        }
+        
+        const descEl = document.getElementById('propDesc');
+        if (descEl) descEl.textContent = p.description || 'No description available.';
+
+        // --- Dynamic Stats Grid (Top) ---
+        const statsGrid = document.querySelector('.stats-grid');
+        statsGrid.innerHTML = ''; 
+
+        const details = p.details || {};
+        
+        // Define mappings for important fields at the top
+        const statMappings = [
+            { key: 'area', label: 'Sqft', icon: 'maximize' },
+            { key: 'carpetArea', label: 'Sqft', icon: 'maximize' },
+            { key: 'bhk', label: '', icon: 'bed' },
+            { key: 'beds', label: 'Beds', icon: 'bed' },
+            { key: 'bedrooms', label: 'Beds', icon: 'bed' },
+            { key: 'bath', label: 'Bath', icon: 'bath' },
+            { key: 'bathrooms', label: 'Bath', icon: 'bath' },
+            { key: 'floor', label: 'Floor', icon: 'layers', prefix: 'Floor ' },
+            { key: 'floorNumber', label: 'Floor', icon: 'layers', prefix: 'Floor ' },
+            { key: 'facing', label: 'Facing', icon: 'navigation' },
+            { key: 'furnishing', label: '', icon: 'armchair' },
+            { key: 'plot_area', label: 'Plot Area', icon: 'map' },
+            { key: 'plotArea', label: 'Plot Area', icon: 'map' }
+        ];
+
+        let topStatsAdded = 0;
+        statMappings.forEach(m => {
+            if (details[m.key] && topStatsAdded < 4) {
+                let value = details[m.key];
+                if (m.prefix) value = m.prefix + value;
+                if (m.label) value = value + ' ' + m.label;
+                addStat(statsGrid, m.icon, value);
+                topStatsAdded++;
+            }
+        });
+
+        // --- Full Details Grid ---
+        const fullDetailsGrid = document.getElementById('fullDetailsGrid');
+        if (fullDetailsGrid) {
+            fullDetailsGrid.innerHTML = '';
+            
+            const labelMap = {
+                bhk: 'BHK Type', area: 'Area (Sqft)', carpet_area: 'Carpet Area (Sqft)', built_up: 'Built-up Area (Sqft)',
+                plot_area: 'Plot Area', total_floors: 'Total Floors', floor: 'Floor Number', facing: 'Facing',
+                furnishing: 'Furnishing', rent: 'Monthly Rent', negotiable: 'Negotiable', deposit: 'Security Deposit',
+                maintenance: 'Maintenance', maint: 'Maintenance', brokerage: 'Brokerage', parking_fee: 'Parking Charges',
+                electricity: 'Electricity', water: 'Water', avail_date: 'Available From', lease_duration: 'Lease (Months)',
+                lease: 'Lease (Years)', notice_period: 'Notice Period (Days)', status: 'Status', tenant_pref: 'Preferred Tenant',
+                gender: 'Gender Pref', occupancy: 'Occupancy Limit', food: 'Food Preference', pets: 'Pets Allowed',
+                gated: 'Gated Society', beds: 'Bedrooms', bath: 'Bathrooms', pool: 'Private Pool', garden: 'Private Garden',
+                servant: 'Servant Room', clubhouse: 'Clubhouse Access', gym: 'Home Gym', theatre: 'Home Theatre',
+                gst: 'GST Applicable', escalation: 'Rent Escalation %', power: 'Power Load (kW)', washrooms: 'Washrooms',
+                fire: 'Fire Safety Compliant', suitable: 'Suitable For', occupancy_status: 'Occupancy Status', roi: 'Expected ROI %',
+                price_unit: 'Price per Sq.Ft/Yd', plot_type: 'Plot Type', title_clear: 'Title Clear', registry: 'Registry Available',
+                authority: 'Approved By', road: 'Road Width (Ft)', boundary: 'Boundary Wall', sqft_price: 'Price per Sq. Ft.',
+                ownership: 'Ownership Type', age: 'Property Age', possession: 'Possession', rera: 'RERA Registered',
+                loan_approved: 'Bank Loan Approved', under_loan: 'Currently Under Loan', society: 'Society Name'
+            };
+
+            const dynamicFields = [
+                { label: 'Property Type', val: p.property_type },
+                { label: 'Intent', val: p.intent }
+            ];
+
+            Object.entries(details).forEach(([key, val]) => {
+                if (key === 'desc' || Array.isArray(val)) return;
+                
+                if (labelMap[key]) {
+                     dynamicFields.push({ label: labelMap[key], val: val });
+                } else if (typeof val !== 'object' && typeof val !== 'boolean') {
+                     dynamicFields.push({ label: key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '), val: val });
+                }
+            });
+
+            dynamicFields.forEach(field => {
+                let displayVal = field.val;
+                if (displayVal === undefined || displayVal === null || displayVal === '') return;
+                
+                if (displayVal === true || displayVal === 'true') displayVal = 'Yes';
+                if (displayVal === false || displayVal === 'false') displayVal = 'No';
+
+                const row = document.createElement('div');
+                row.className = 'detail-row';
+                row.innerHTML = `<span class="detail-label">${field.label}</span><span class="detail-value">${displayVal}</span>`;
+                fullDetailsGrid.appendChild(row);
+            });
+        }
+
+        // --- Dynamic Amenities ---
+        const amenityGrid = document.querySelector('.amenity-grid');
+        amenityGrid.innerHTML = '';
+        
+        // Collect everything else into a list of "Extra Features"
+        const skipKeys = ['area', 'bhk', 'beds', 'bath', 'floor', 'facing', 'furnishing', 'plot_area', 'carpet_area', 'total_floors', 'built_up', 'rent', 'deposit', 'price', 'desc'];
+        
+        Object.entries(details).forEach(([key, val]) => {
+            if (skipKeys.includes(key)) return;
+            
+            if (Array.isArray(val)) {
+                val.forEach(item => addAmenity(amenityGrid, item));
+            } else if (typeof val === 'boolean' && val === true) {
+                // Convert key like 'gated_society' to 'Gated Society'
+                const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                addAmenity(amenityGrid, label);
+            } else if (typeof val === 'string' && val.length > 0 && val !== 'all') {
+                addAmenity(amenityGrid, val);
+            }
+        });
+
+        if (amenityGrid.innerHTML === '') {
+            document.querySelector('.amenities').style.display = 'none';
+        }
+        
+        // --- Dynamic SEO & GEO Optimization ---
+        document.title = `${p.title} in ${p.location} | HouseHunt`;
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute("content", p.description || `Beautiful property located in ${p.location} available for ₹${p.price.toLocaleString()}`);
+
+        const structuredData = {
+            "@context": "https://schema.org",
+            "@type": "RealEstateListing",
+            "name": p.title,
+            "description": p.description || `Property in ${p.location}`,
+            "image": p.images || [p.image],
+            "url": window.location.href,
+            "offers": {
+                "@type": "Offer",
+                "priceCurrency": "INR",
+                "price": p.price
+            }
+        };
+
+        const scriptTag = document.createElement('script');
+        scriptTag.type = 'application/ld+json';
+        scriptTag.text = JSON.stringify(structuredData);
+        document.head.appendChild(scriptTag);
+
+        // --- Seller Info ---
+        if (p.owner_name) {
+            const sellerNameEl = document.querySelector('.seller-info h4');
+            if (sellerNameEl) sellerNameEl.textContent = p.owner_name;
+            const roleEl = document.querySelector('.seller-info p');
+            if (roleEl && p.owner_role) roleEl.textContent = p.owner_role;
+        } else if (p.owner_id) {
+            try {
+                const profileRes = await fetch(`${BACKEND_URL}/api/profiles/${p.owner_id}`);
+                if (profileRes.ok) {
+                    const profileData = await profileRes.json();
+                    if (profileData && profileData.full_name) {
+                        const sellerNameEl = document.querySelector('.seller-info h4');
+                        if (sellerNameEl) sellerNameEl.textContent = profileData.full_name;
+                        
+                        if (profileData.role) {
+                            const role = profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1);
+                            const roleEl = document.querySelector('.seller-info p');
+                            if (roleEl) roleEl.textContent = role;
+                        }
+                    }
+                }
+            } catch(e) {
+                console.warn("Using default seller details");
+            }
+        }
+
+        // --- Wishlist Button Logic ---
+        const wishlistBtn = document.querySelector('.wishlist-btn');
+        if (wishlistBtn) {
+            const favorites = JSON.parse(localStorage.getItem('househunt_favorites') || '[]');
+            if (favorites.includes(propertyId)) {
+                wishlistBtn.classList.add('active');
+            }
+
+            wishlistBtn.addEventListener('click', () => {
+                const currentFavs = JSON.parse(localStorage.getItem('househunt_favorites') || '[]');
+                if (currentFavs.includes(propertyId)) {
+                    // Remove
+                    const newFavs = currentFavs.filter(id => id !== propertyId);
+                    localStorage.setItem('househunt_favorites', JSON.stringify(newFavs));
+                    wishlistBtn.classList.remove('active');
+                } else {
+                    // Add
+                    currentFavs.push(propertyId);
+                    localStorage.setItem('househunt_favorites', JSON.stringify(currentFavs));
+                    wishlistBtn.classList.add('active');
+                }
+            });
+        }
+
+        // --- Action Interceptors (Guest Mode) ---
+        const handleProtectedAction = () => {
+            const currentUser = JSON.parse(localStorage.getItem('user'));
+            const userId = currentUser ? (currentUser.uid || currentUser.id) : null;
+            if (!currentUser || !userId) {
+                // IN-APP MODAL for Guest Mode
+                const returnUrl = encodeURIComponent(window.location.href);
+                
+                // Remove existing if any
+                const existing = document.getElementById('guestLoginModal');
+                if (existing) existing.remove();
+                
+                const modalOverlay = document.createElement('div');
+                modalOverlay.id = 'guestLoginModal';
+                modalOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;';
+                
+                const modalBox = document.createElement('div');
+                modalBox.style.cssText = 'background: white; width: 90%; max-width: 340px; padding: 24px; border-radius: 24px; text-align: center; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 40px rgba(0,0,0,0.2);';
+                
+                modalBox.innerHTML = `
+                    <div style="width: 60px; height: 60px; background: #f0f4ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                        <i data-lucide="lock" style="width: 30px; height: 30px; color: #0066ff;"></i>
+                    </div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #111;">Login Required</h3>
+                    <p style="margin: 0 0 24px 0; font-size: 14px; color: #666; line-height: 1.5;">You must be logged in to contact the owner and view their details.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="closeGuestModalBtn" style="flex: 1; padding: 12px; border: none; background: #f1f5f9; color: #475569; font-weight: 700; border-radius: 12px; cursor: pointer; font-size: 15px;">Cancel</button>
+                        <button onclick="window.location.href='login.html?returnTo=${returnUrl}'" style="flex: 1; padding: 12px; border: none; background: #111; color: white; font-weight: 700; border-radius: 12px; cursor: pointer; font-size: 15px;">Log In</button>
+                    </div>
+                `;
+                
+                modalOverlay.appendChild(modalBox);
+                document.body.appendChild(modalOverlay);
+                
+                if (window.lucide) window.lucide.createIcons();
+                
+                // Animate In
+                requestAnimationFrame(() => {
+                    modalOverlay.style.opacity = '1';
+                    modalBox.style.transform = 'scale(1)';
+                });
+                
+                document.getElementById('closeGuestModalBtn').addEventListener('click', () => {
+                    modalOverlay.style.opacity = '0';
+                    modalBox.style.transform = 'scale(0.9)';
+                    setTimeout(() => modalOverlay.remove(), 300);
+                });
+                
+                return false;
+            }
+            if (userId === p.owner_id) {
+                alert("This is your own property!");
+                return false;
+            }
+            return { currentUser, userId };
+        };
+
+        const callBtn = document.querySelector('.call-btn');
+        if (callBtn) {
+            callBtn.addEventListener('click', async () => {
+                const userCheck = handleProtectedAction();
+                if (!userCheck) return;
+
+                if (p.owner_phone) {
+                    window.location.href = `tel:${p.owner_phone}`;
+                    return;
+                }
+
+                // If passed auth, fetch owner profile to get phone
+                try {
+                    const originalHtml = callBtn.innerHTML;
+                    callBtn.innerHTML = '<i class="lucide-loader"></i> Fetching...';
+                    const profileRes = await fetch(`${BACKEND_URL}/api/profiles/${p.owner_id}`);
+                    if (profileRes.ok) {
+                        const profileData = await profileRes.json();
+                        if (profileData.phone) {
+                            window.location.href = `tel:${profileData.phone}`;
+                        } else {
+                            alert("Owner hasn't provided a public phone number.");
+                        }
+                    } else {
+                        window.location.href = `tel:+919811234567`;
+                    }
+                    callBtn.innerHTML = originalHtml;
+                    if (window.lucide) window.lucide.createIcons();
+                } catch(e) {
+                    window.location.href = `tel:+919811234567`;
+                    callBtn.innerHTML = '<i data-lucide="phone"></i> Call';
+                    if (window.lucide) window.lucide.createIcons();
+                }
+            });
+        }
+
+        // --- Chat Now Logic ---
+        const chatBtn = document.querySelector('.chat-btn');
+        if (chatBtn) {
+            chatBtn.addEventListener('click', async () => {
+                const userCheck = handleProtectedAction();
+                if (!userCheck) return;
+                const { userId } = userCheck;
+                
+                // Change button text to show loading
+                const originalText = chatBtn.innerHTML;
+                chatBtn.innerHTML = '<i class="lucide-loader"></i> Starting...';
+                
+                try {
+                    const chatRes = await fetch(`${BACKEND_URL}/api/chats`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            property_id: p.id,
+                            buyer_id: userId,
+                            seller_id: p.owner_id || 'owner-1'
+                        })
+                    });
+                    
+                    if (chatRes.ok) {
+                        const chatData = await chatRes.json();
+                        window.location.href = `messages.html?chat_id=${chatData.id}`;
+                        return;
+                    }
+                } catch(e) {
+                    console.warn("Backend chat unavailable, using local demo chat");
+                }
+
+                // Fallback: save demo conversation in localStorage and navigate
+                const demoChatId = `chat-demo-${p.id}`;
+                const existingChats = JSON.parse(localStorage.getItem('househunt_demo_chats') || '[]');
+                if (!existingChats.some(c => c.id === demoChatId)) {
+                    existingChats.unshift({
+                        id: demoChatId,
+                        property: p,
+                        seller: { full_name: p.owner_name || 'Property Host', phone: p.owner_phone },
+                        lastMessage: `Inquiry started for ${p.title || p.type}`,
+                        updated_at: new Date().toISOString()
+                    });
+                    localStorage.setItem('househunt_demo_chats', JSON.stringify(existingChats));
+                }
+                window.location.href = `messages.html?chat_id=${demoChatId}`;
+            });
+        }
+
+        if (window.lucide) window.lucide.createIcons();
+
+    } catch (err) {
+        console.error('Error loading property:', err);
+    }
+
+    function addStat(container, icon, text) {
+        const div = document.createElement('div');
+        div.className = 'stat-card';
+        div.innerHTML = `<i data-lucide="${icon}"></i><span>${text}</span>`;
+        container.appendChild(div);
+    }
+
+    function addAmenity(container, label) {
+        const div = document.createElement('div');
+        div.className = 'amenity-item';
+        // Simple heuristic for icons
+        let icon = 'check-circle';
+        if (label.toLowerCase().includes('parking')) icon = 'parking-circle';
+        if (label.toLowerCase().includes('power')) icon = 'zap';
+        if (label.toLowerCase().includes('security')) icon = 'shield-check';
+        if (label.toLowerCase().includes('water')) icon = 'droplet';
+        
+        div.innerHTML = `<i data-lucide="${icon}"></i> ${label}`;
+        container.appendChild(div);
+    }
+});

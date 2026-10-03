@@ -1,0 +1,45 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - MARITIME AIS & SATELLITE UPLINK AIR-GAP
+// Language: Rakshak Security Kernel (RSK)
+// File: security/maritime_ais_satellite_airgap.rsk
+// Standard: IMO Resolution MSC.428(98) Maritime Cyber Risk Management
+// ==============================================================================
+
+shield MaritimeAisSatelliteAirgap {
+    target: "/ais/nmea0183/*", "/nmea2000/can/*", "/ecdis/navigation/*", "/inmarsat/c_uplink/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [0, 7];
+        trap_debugger: true;
+        hardware_watchdog_timeout_ms: 100;
+        prohibit_remote_firmware_flashing: true;
+    }
+
+    maritime {
+        enforce_nmea_sentence_checksum: true;
+        detect_ais_spoofing_velocity_jump: true;
+        max_vessel_acceleration_knots_per_sec: 2.5;
+        disallow_bridge_network_bridging: true;
+        isolate_ot_propulsion_bus: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        quarantine_satellite_uplink: true;
+        prohibit_unauthenticated_rf: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 403;
+        fallback_action: SWITCH_TO_MANUAL_STEERING_MODE;
+        inject_stego_canary: "AIS_SPOOF_CANARY_MMSI_993102941";
+        synthesize_decoy: "NMEA_CORRUPTED_SENTENCE_CHECKSUM_FAIL";
+    }
+
+    rules {
+        assert packet.nmea_checksum_valid == true;
+        assert vessel.ot_network_airgap_intact == true;
+    }
+}

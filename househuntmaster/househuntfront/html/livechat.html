@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Live Support | HouseHunt</title>
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="../css/livechat.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+        <header class="page-header" style="padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee;">
+            <button onclick="history.back()" style="background: none; border: none; font-size: 20px; color: #333;"><i data-lucide="arrow-left"></i></button>
+            <div style="display: flex; flex-direction: column;">
+                <h1 style="font-size: 1.2rem; font-weight: 600; margin: 0;">Live Support</h1>
+                <span id="chat-status-text" style="font-size: 0.75rem; color: #666;">Checking availability...</span>
+            </div>
+        </header>
+
+        <div class="chat-content">
+            <!-- Offline State -->
+            <div id="offline-state" style="display: none; text-align: center; padding: 40px 20px;">
+                <div style="background: #f3f4f6; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                    <i data-lucide="clock" style="width: 32px; height: 32px; color: #6b7280;"></i>
+                </div>
+                <h2 style="font-size: 1.25rem; font-weight: 700; color: #111; margin-bottom: 10px;">We're currently offline</h2>
+                <p style="color: #666; font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px;">
+                    Live Agent Chat is only available between <br><b>11:00 AM</b> and <b>6:00 PM IST</b>.<br><br>
+                    Please send us an email and we'll get back to you as soon as possible.
+                </p>
+                <a href="mailto:support@househunt.live" class="primary-btn">
+                    <i data-lucide="mail" style="width: 18px; height: 18px;"></i> Send an Email
+                </a>
+            </div>
+
+            <!-- Online State -->
+            <div id="online-state" style="display: none; padding: 20px;">
+                <div style="background: #0066ff10; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start;">
+                    <div style="background: #0066ff; color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i data-lucide="headphones" style="width: 16px; height: 16px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0 0 5px; font-size: 0.95rem; color: #111;">Chat with a Live Agent</h3>
+                        <p style="margin: 0; font-size: 0.85rem; color: #666;">Please describe your issue below and we'll create a high-priority support ticket.</p>
+                    </div>
+                </div>
+
+                <form id="chat-form">
+                    <div class="form-group">
+                        <label for="issue-select" style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">What do you need help with?</label>
+                        <select id="issue-select" required style="width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; font-size: 1rem; outline: none; background: white; appearance: none;">
+                            <option value="" disabled selected>Select an issue...</option>
+                            <option value="Payment or Subscription Issue">Payment or Subscription Issue</option>
+                            <option value="Property not getting listed">Property not getting listed</option>
+                            <option value="Report a scam or fake property">Report a scam or fake property</option>
+                            <option value="Unable to contact a seller/buyer">Unable to contact a seller/buyer</option>
+                            <option value="Account or Profile issue">Account or Profile issue</option>
+                            <option value="Bug or Technical Issue">Bug or Technical Issue</option>
+                            <option value="Other Inquiry">Other Inquiry</option>
+                        </select>
+                        <!-- Custom dropdown arrow -->
+                        <div style="position: relative; margin-top: -38px; margin-right: 15px; text-align: right; pointer-events: none;">
+                            <i data-lucide="chevron-down" style="color: #666; width: 20px; height: 20px;"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="primary-btn" style="width: 100%; margin-top: 30px;">
+                        <i data-lucide="send" style="width: 18px; height: 18px;"></i> Open Ticket & Start Chat
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../js/livechat.js"></script>
+    <script>lucide.createIcons();</script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

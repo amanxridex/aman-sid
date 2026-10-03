@@ -1,0 +1,164 @@
+:root {
+    --primary: #2D68FF;
+    --text-main: #1A1D1E;
+    --text-muted: #6A6D7C;
+    --white: #FFFFFF;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(env(safe-area-inset-top, 25px) + 15px) 20px 15px;
+    background: var(--white);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Plots Grid Layout */
+.plots-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+}
+
+/* Standard List */
+.list-section { padding: 0 20px 100px; }
+
+/* Bottom Sheet */
+.bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 30px 30px 0 0;
+    padding: 30px 20px calc(20px + env(safe-area-inset-bottom));
+    z-index: 1001;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bottom-sheet.open { transform: translateY(0); }
+.sheet-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+}
+
+.filter-group { margin-bottom: 25px; }
+.option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.option {
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    background: #f9fafb;
+}
+.option.selected { background: #E9F0FF; color: var(--primary); border-color: var(--primary); }
+
+.apply-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* Premium UI Enhancements */
+.chip {
+    background: #F3F4F6;
+    color: #374151;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border: 1px solid #E5E7EB;
+    transition: all 0.2s ease;
+}
+
+.chip:active {
+    background: #E5E7EB;
+    transform: scale(0.98);
+}
+
+.plot-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.03);
+    position: relative;
+}
+
+.plot-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.plot-info {
+    padding: 15px;
+    background: linear-gradient(to bottom, #ffffff, #fcfcfc);
+}
+
+.plot-info .price {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 2px;
+}
+
+.plot-info .area {
+    font-size: 12px;
+    color: #4B5563;
+    font-weight: 700;
+}
+
+.standard-card {
+    display: flex;
+    gap: 15px;
+    padding: 12px;
+    background: white;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.03);
+    align-items: center;
+}
+
+.standard-card img { 
+    width: 90px; 
+    height: 90px; 
+    border-radius: 14px; 
+    object-fit: cover; 
+}
+
+.standard-info h3 { 
+    font-size: 15px; 
+    font-weight: 800; 
+    color: #111827;
+    margin: 0 0 4px 0;
+}

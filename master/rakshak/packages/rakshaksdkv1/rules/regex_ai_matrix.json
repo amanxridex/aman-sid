@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RakshakRegExThreatMatrix",
+  "version": "1.0.0",
+  "description": "Hyper-optimized regular expression patterns for zero-trust AI scraping interception",
+  "signatures": {
+    "ai_crawlers": "(?i)\\b(claudebot|claude-web|anthropic-ai|gptbot|chatgpt-user|oai-searchbot|google-extended|googleother|perplexitybot|deepseekbot|cohere-ai|meta-externalagent|bytespider)\\b",
+    "headless_runtimes": "(?i)\\b(headlesschrome|puppeteer|playwright|selenium|phantomjs|crawl4ai|firecrawl|jina|tavily|scrapy|python-requests|aiohttp|httpx|curl|wget|go-http-client)\\b",
+    "content_negotiation_probes": "(?i)(text/markdown|text/plain;\\s*q=0\\.9|application/x-ndjson|application/jsonl)",
+    "scrape_query_probes": "(?i)(\\?(.*&)?(format=md|format=raw|markdown=1|view=source|render=text|scrape=true|llm=true)(&.*)?$)",
+    "cloud_ip_subnets": "^(3\\.5\\.|13\\.248\\.|15\\.|16\\.|18\\.|34\\.|35\\.|52\\.|54\\.|104\\.196\\.|130\\.211\\.|146\\.148\\.|162\\.243\\.|172\\.217\\.)",
+    "subresource_extensions": "(?i)\\.(css|js|mjs|woff|woff2|ttf|otf|png|jpe?g|gif|svg|webp|ico)(\\?.*)?$"
+  }
+}

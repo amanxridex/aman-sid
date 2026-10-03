@@ -1,0 +1,71 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Rakshak",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#keywords" },
+    { "include": "#constants" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#sections" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.rsk",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.rsk",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.declaration.rsk",
+          "match": "\\b(shield)\\b"
+        },
+        {
+          "name": "keyword.other.section.rsk",
+          "match": "\\b(target|hardware|network|telemetry|defense)\\b"
+        },
+        {
+          "name": "support.type.property-name.rsk",
+          "match": "\\b(trap_debugger|max_cycle_jitter_ms|block_datacenter_asns|verify_sec_fetch_state|require_asset_waterfall|min_waterfall_ratio|min_path_entropy|max_sliding_velocity|mode|status_code|adversarial_token_rate|inject_stego_canary|synthesize_decoy)\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.rsk",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.defense-mode.rsk",
+          "match": "\\b(ASYMMETRIC_DECEPTION|HARD_BLOCK|BYZANTINE_TARPIT)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.rsk",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.rsk",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.rsk",
+      "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+    }
+  },
+  "scopeName": "source.rsk"
+}

@@ -1,0 +1,59 @@
+# ==============================================================================
+# RAKSHAK SECURITY KERNEL (RSK) DSL & BYTECODE SPECIFICATION
+# ==============================================================================
+*.rsk text eol=lf linguist-language=RSK linguist-detectable
+*.rskb binary -diff -merge -text linguist-documentation
+
+# ==============================================================================
+# GITHUB LINGUIST LANGUAGE OVERRIDES: EXCLUDE ALL HTML & VENDOR ASSETS
+# ==============================================================================
+*.html linguist-documentation
+*.html linguist-vendored
+*.html -linguist-detectable
+
+public/** linguist-documentation
+public/** linguist-vendored
+public/** -linguist-detectable
+
+docs/** linguist-documentation
+docs/** linguist-vendored
+docs/** -linguist-detectable
+
+packages/**/html_css/** linguist-documentation
+packages/**/html_css/** linguist-vendored
+packages/**/html_css/** -linguist-detectable
+
+# ==============================================================================
+# VENDOR / TOOLING SCRIPTS & SCRATCH ASSETS (EXCLUDED FROM LANGUAGE STATS)
+# ==============================================================================
+scripts/** linguist-documentation
+scripts/** linguist-vendored
+scripts/** -linguist-detectable
+
+scratch/** linguist-documentation
+scratch/** linguist-vendored
+scratch/** -linguist-detectable
+
+rakshaksdkv1/test.js linguist-documentation
+rakshaksdkv1/test.js linguist-vendored
+rakshaksdkv1/test.js -linguist-detectable
+
+dist/** linguist-documentation
+dist/** linguist-vendored
+dist/** -linguist-detectable
+
+**/dist/** linguist-documentation
+**/dist/** linguist-vendored
+**/dist/** -linguist-detectable
+
+# ==============================================================================
+# PRIORITIZE CORE SYSTEMS LANGUAGES
+# ==============================================================================
+*.cs linguist-detectable text diff=csharp
+*.cpp linguist-detectable text diff=cpp
+*.c linguist-detectable text diff=c
+*.ts linguist-detectable text
+*.py linguist-detectable text diff=python
+*.js linguist-detectable text
+*.jsx linguist-detectable text
+

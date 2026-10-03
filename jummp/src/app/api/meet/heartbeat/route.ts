@@ -1,0 +1,145 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { verifyMeetingCapability } from '@/lib/meetingAuth';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      })
+    : null;
+
+// In-memory write deduplication and throttle cache for rooms (code -> { lastTouch, cachedResult })
+const roomWriteThrottle = new Map<string, { lastTouch: number; cachedResult?: any }>();
+const WRITE_THROTTLE_MS = 60000; // 60 seconds
+
+export async function POST(req: NextRequest) {
+  try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Meeting persistence is not configured' }, { status: 503 });
+    }
+
+    const body = await req.json();
+    const { code, participantName, action, credential } = body;
+    if (typeof code !== 'string' || typeof credential !== 'string') {
+      return NextResponse.json({ error: 'Missing meeting credentials' }, { status: 400 });
+    }
+
+    const capability = verifyMeetingCapability(credential, code);
+    if (!capability) {
+      return NextResponse.json({ error: 'Invalid or expired meeting admission' }, { status: 401 });
+    }
+    if (
+      capability.scope === 'admitted' &&
+      capability.name &&
+      capability.name !== participantName
+    ) {
+      return NextResponse.json({ error: 'Participant identity mismatch' }, { status: 403 });
+    }
+
+    const isDestructive = body.endMeeting || action === 'leave' || action === 'end';
+    const now = Date.now();
+    const cached = roomWriteThrottle.get(code);
+
+    // Free Tier Protection: If regular heartbeat and room was updated in DB less than 60s ago, return cached success
+    if (!isDestructive && cached && now - cached.lastTouch < WRITE_THROTTLE_MS) {
+      return NextResponse.json({
+        success: true,
+        cached: true,
+        activeParticipantsCount: cached.cachedResult?.activeParticipantsCount ?? 1,
+      });
+    }
+
+    const safeAction = action === 'leave' || action === 'keepalive' || action === 'end' ? action : 'heartbeat';
+    const { data, error } = await supabase.rpc('rpc_heartbeat', {
+      p_code: code,
+      p_participant_name: participantName || (capability.scope === 'host' ? 'Host' : 'Guest'),
+      p_is_host: capability.scope === 'host',
+      p_action: safeAction === 'end' ? 'leave' : safeAction,
+    });
+
+    if (body.endMeeting || safeAction === 'end' || (safeAction === 'leave' && (data?.activeParticipantsCount === 0 || data?.active_participants_count === 0))) {
+      await supabase
+        .from('meetings')
+        .update({
+          status: 'ended',
+          ended_at: new Date().toISOString(),
+          last_activity_at: new Date().toISOString(),
+          active_participants_count: 0,
+        })
+        .eq('code', code);
+      roomWriteThrottle.delete(code);
+    } else if (!isDestructive) {
+      roomWriteThrottle.set(code, { lastTouch: now, cachedResult: data });
+    }
+
+    if (error) {
+      console.error('rpc_heartbeat failed:', error.message);
+      return NextResponse.json({ error: 'Meeting heartbeat is unavailable' }, { status: 503 });
+    }
+    if (data?.error) {
+      return NextResponse.json({ error: data.error }, { status: 409 });
+    }
+    return NextResponse.json(data || { success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal error';
+    console.warn('Meeting heartbeat backend error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Meeting persistence is not configured' }, { status: 503 });
+    }
+    const code = req.nextUrl.searchParams.get('code');
+    if (!code) return NextResponse.json({ error: 'Missing code' }, { status: 400 });
+
+    if (req.nextUrl.searchParams.get('activate') === 'true') {
+      const nowIso = new Date().toISOString();
+      await supabase
+        .from('meetings')
+        .update({
+          status: 'active',
+          ended_at: null,
+          last_activity_at: nowIso,
+          updated_at: nowIso,
+        })
+        .eq('code', code);
+    }
+
+    const { data: meeting, error } = await supabase
+      .from('meetings')
+      .select('code,status,active_participants_count,last_activity_at,updated_at,created_at')
+      .eq('code', code)
+      .maybeSingle();
+
+    if (error || !meeting) {
+      return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
+    }
+
+    const lastActivity = new Date(
+      meeting.last_activity_at || meeting.updated_at || meeting.created_at
+    ).getTime();
+    const inactiveMs = Math.max(0, Date.now() - lastActivity);
+    const isInactiveEnded =
+      meeting.status === 'ended' ||
+      ((!meeting.active_participants_count || meeting.active_participants_count <= 0) &&
+        inactiveMs >= 10 * 60 * 1000);
+
+    return NextResponse.json({
+      code: meeting.code,
+      status: meeting.status,
+      activeParticipantsCount: meeting.active_participants_count || 0,
+      isInactiveEnded,
+      inactiveMinutes: Math.floor(inactiveMs / 60_000),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

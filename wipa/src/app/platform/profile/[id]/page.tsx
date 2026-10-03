@@ -1,0 +1,1316 @@
+// @ts-nocheck
+'use client';
+
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
+import { useState, useEffect, use } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAppStore } from '@/store/useAppStore';
+import { 
+  BadgeCheck, MapPin, Link as LinkIcon, Users, User, Mail, MessageSquare, Briefcase, GraduationCap,
+  Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2, Plus,
+  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
+  TrendingUp, Search, Image as ImageIcon, Video, Award, Gift, Sparkles, Folder,
+  Lightbulb, HelpCircle, Headphones, Calendar, Building2
+} from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
+
+import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
+import { recordProfileView } from '@/lib/analytics';
+import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
+import FeedVideoPlayer from '@/components/FeedVideoPlayer';
+
+export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = use(params);
+  const profileId = unwrappedParams.id;
+  
+  const { user } = useAppStore();
+  const router = useRouter();
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isTogglingFollow, setIsTogglingFollow] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
+  const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [storyProgress, setStoryProgress] = useState(0);
+  const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
+
+  const toggleExpandPost = (postId: string) => {
+    setExpandedPosts(prev => {
+      const next = new Set(prev);
+      if (next.has(postId)) next.delete(postId);
+      else next.add(postId);
+      return next;
+    });
+  };
+
+  const [profileData, setProfileData] = useState({
+    id: '',
+    name: 'WIPA Member',
+    role: 'Intellectual Property Specialist | WIPA Member',
+    company: 'International IP Practice',
+    experienceYears: 5,
+    education: 'Law & Technology Institute',
+    location: 'Global',
+    bio: 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
+    linkedin: '',
+    website: '',
+    practiceAreas: 'Patents, Trademarks, IP Strategy, Licensing',
+    skills: 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
+    avatarUrl: '',
+    coverUrl: '',
+    introVideoUrl: DEFAULT_MOCK_VIDEO,
+    memberId: '',
+    verificationStatus: 'verified',
+    isWipaRecommended: false,
+    businessProfile: null as any,
+    positions: [] as any[]
+  });
+
+  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!profileId) {
+        setIsLoading(false);
+        setNotFound(true);
+        return;
+      }
+
+      setIsLoading(true);
+      setNotFound(false);
+      try {
+        const data = await getProfileByIdOrMemberId(profileId);
+          
+        if (data) {
+          const resolvedId = data.id;
+          const parsedPositions = Array.isArray(data.experience_data) && data.experience_data.length > 0
+            ? data.experience_data
+            : [
+                {
+                  id: 'pos-1',
+                  title: data.role || 'Intellectual Property Specialist | WIPA Member',
+                  company: data.company || 'International IP Practice',
+                  location: data.country || 'Global',
+                  years: data.experience_years || 5,
+                  current: true,
+                  description: ''
+                }
+              ];
+
+          const parsedEducations = Array.isArray(data.education_data) && data.education_data.length > 0
+            ? data.education_data
+            : [
+                {
+                  id: 'edu-1',
+                  institution: data.education || 'Law & Technology Institute',
+                  degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                  year: ''
+                }
+              ];
+          
+          setProfileData({
+            id: resolvedId,
+            name: data.full_name || 'WIPA Member',
+            role: data.role || 'Intellectual Property Specialist | WIPA Member',
+            company: data.company || 'International IP Practice',
+            experienceYears: data.experience_years || 5,
+            education: data.education || 'Law & Technology Institute',
+            location: data.country || 'Global',
+            bio: data.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
+            linkedin: data.linkedin_url || '',
+            website: data.website_url || '',
+            practiceAreas: data.practice_area || 'Patents, Trademarks, IP Strategy, Licensing',
+            skills: data.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
+            avatarUrl: data.avatar_url || '',
+            coverUrl: data.cover_url || '',
+            introVideoUrl: data.intro_video_url || DEFAULT_MOCK_VIDEO,
+            memberId: data.member_id || '',
+            verificationStatus: data.verification_status || 'verified',
+            isWipaRecommended: data.is_wipa_recommended ?? false,
+            businessProfile: null,
+            positions: parsedPositions,
+            educations: parsedEducations
+          });
+
+          // Record Profile View (deduplicated & filtered for self-views)
+          if (resolvedId) {
+            void recordProfileView(resolvedId, user?.id);
+          }
+
+          // Fetch real counts: connections, followers, posts
+          const [postsRes, connCountRes, followCountRes] = await Promise.all([
+            supabase
+              .from('feed_posts')
+              .select(`
+                *,
+                author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
+              `)
+              .eq('author_id', resolvedId)
+              .is('group_id', null)
+              .order('created_at', { ascending: false }),
+            supabase
+              .from('connections')
+              .select('id', { count: 'exact', head: true })
+              .or(`requester_id.eq.${resolvedId},recipient_id.eq.${resolvedId}`)
+              .eq('status', 'accepted'),
+            supabase
+              .from('follows')
+              .select('id', { count: 'exact', head: true })
+              .eq('following_id', resolvedId)
+          ]);
+
+          if (postsRes.data) {
+            setUserPosts(postsRes.data);
+          }
+
+          setStats({
+            posts: postsRes.data?.length || 0,
+            connections: connCountRes.count || 0,
+            followers: followCountRes.count || 0
+          });
+
+          // Fetch connection and follow status if current user is logged in
+          if (user?.id && user.id !== resolvedId) {
+            const [connRes, followRes, likesRes] = await Promise.all([
+              supabase
+                .from('connections')
+                .select('*')
+                .or(`and(requester_id.eq.${user.id},recipient_id.eq.${resolvedId}),and(requester_id.eq.${resolvedId},recipient_id.eq.${user.id})`)
+                .maybeSingle(),
+              supabase
+                .from('follows')
+                .select('id')
+                .eq('follower_id', user.id)
+                .eq('following_id', resolvedId)
+                .maybeSingle(),
+              supabase
+                .from('feed_likes')
+                .select('post_id')
+                .eq('user_id', user.id)
+            ]);
+
+            if (connRes.data) {
+              const conn = connRes.data;
+              if (conn.status === 'accepted') {
+                setConnectionStatus('accepted');
+                if (!followRes.data) {
+                  const { error: followSyncError } = await supabase.from('follows').upsert(
+                    { follower_id: user.id, following_id: resolvedId },
+                    { onConflict: 'follower_id,following_id', ignoreDuplicates: true }
+                  );
+                  if (!followSyncError) {
+                    setIsFollowing(true);
+                    setStats(previous => ({ ...previous, followers: previous.followers + 1 }));
+                  }
+                }
+              } else if (conn.requester_id === user.id) {
+                setConnectionStatus('pending_sent');
+              } else {
+                setConnectionStatus('pending_received');
+              }
+            }
+
+            if (connRes.data?.status !== 'accepted' || followRes.data) {
+              setIsFollowing(Boolean(followRes.data));
+            }
+
+            if (likesRes.data) {
+              setLikedPostIds(new Set(likesRes.data.map(l => l.post_id)));
+            }
+          }
+        } else {
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error("Error fetching member profile:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [profileId, user?.id]);
+
+  const handleToggleFollow = async () => {
+    if (!user?.id || isTogglingFollow || !profileData.id) return;
+    setIsTogglingFollow(true);
+    const currentlyFollowing = isFollowing;
+
+    try {
+      if (connectionStatus === 'accepted' && currentlyFollowing) return;
+      if (currentlyFollowing) {
+        await supabase
+          .from('follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', profileData.id);
+        setIsFollowing(false);
+        setStats(prev => ({ ...prev, followers: Math.max(0, prev.followers - 1) }));
+      } else {
+        await supabase
+          .from('follows')
+          .insert({
+            follower_id: user.id,
+            following_id: profileData.id
+          });
+        await supabase.from('notifications').insert({
+          user_id: profileData.id,
+          actor_id: user.id,
+          type: 'new_follower',
+          content: `${user.name || 'Someone'} started following you!`,
+          link: `/platform/profile/${user.id}`,
+          is_read: false
+        });
+        setIsFollowing(true);
+        setStats(prev => ({ ...prev, followers: prev.followers + 1 }));
+      }
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+    } finally {
+      setIsTogglingFollow(false);
+    }
+  };
+
+  const handleConnect = async () => {
+    if (!user?.id || !profileData.id || profileData.id === user.id) return;
+    setIsConnecting(true);
+    try {
+      if (connectionStatus === 'none') {
+        await supabase.from('connections').insert({
+          requester_id: user.id,
+          recipient_id: profileData.id,
+          status: 'pending'
+        });
+        setConnectionStatus('pending_sent');
+      } else if (connectionStatus === 'pending_received') {
+        await supabase
+          .from('connections')
+          .update({ status: 'accepted' })
+          .match({ requester_id: profileData.id, recipient_id: user.id });
+        await supabase.from('follows').upsert(
+          { follower_id: user.id, following_id: profileData.id },
+          { onConflict: 'follower_id,following_id', ignoreDuplicates: true }
+        );
+        setConnectionStatus('accepted');
+        if (!isFollowing) {
+          setIsFollowing(true);
+          setStats(previous => ({ ...previous, followers: previous.followers + 1 }));
+        }
+      }
+    } catch (e) {
+      console.error('Error updating connection:', e);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const handleToggleLike = async (postId: string) => {
+    if (!user?.id) return;
+    const isLiked = likedPostIds.has(postId);
+    const nextLiked = new Set(likedPostIds);
+    if (isLiked) {
+      nextLiked.delete(postId);
+      setUserPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: Math.max(0, (p.likes_count || 0) - 1) } : p));
+      await supabase.from('feed_likes').delete().match({ post_id: postId, user_id: user.id });
+    } else {
+      nextLiked.add(postId);
+      setUserPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p));
+      await supabase.from('feed_likes').insert({ post_id: postId, user_id: user.id });
+    }
+    setLikedPostIds(nextLiked);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6] dark:bg-[#0b0f19]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={36} className="animate-spin text-[#5a32fa]" />
+          <p className="text-sm font-semibold text-gray-500">Loading member profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound || !profileData.id) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6] dark:bg-[#0b0f19] px-4">
+        <div className="bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-gray-800 rounded-3xl p-8 max-w-md w-full text-center shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-500 mx-auto flex items-center justify-center mb-4">
+            <Users size={32} />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Member Profile Not Found</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+            The member profile you are looking for might have been updated, changed, or does not exist.
+          </p>
+          <div className="flex flex-col gap-2.5">
+            <Link
+              href="/platform/members"
+              className="w-full py-3 rounded-xl bg-[#5a32fa] hover:bg-[#4924d6] text-white font-bold text-xs shadow-md shadow-[#5a32fa]/20 transition-all text-center block"
+            >
+              Browse Member Directory
+            </Link>
+            <Link
+              href="/platform/network"
+              className="w-full py-3 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 font-bold text-xs transition-colors text-center block"
+            >
+              Back to My Network
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0b0f19] text-gray-900 dark:text-gray-100 font-sans pb-20">
+      
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 pt-0 sm:pt-4">
+        
+        {/* ================= HERO PROFILE CARD ================= */}
+        <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
+          
+          {/* Cover Photo */}
+          <div className="relative h-48 w-full overflow-hidden bg-white sm:h-64 md:h-80">
+            {profileData.coverUrl ? (
+              <img
+                src={profileData.coverUrl}
+                alt={`${profileData.name}'s cover`}
+                className="absolute inset-0 h-full w-full object-contain object-center sm:object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8]">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_3px,transparent_3px)] [background-size:24px_24px]" />
+              </div>
+            )}
+          </div>
+
+          {/* Profile Header Info */}
+          <div className="px-4 sm:px-8 pb-6 sm:pb-8 relative">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-16 sm:-mt-24 mb-4">
+              
+              {/* Avatar + Rainbow Gradient Story Ring */}
+              <div className="relative group self-start">
+                <div 
+                  className="p-[4px] rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-[#5a32fa] animate-gradient cursor-pointer hover:scale-105 transition-all shadow-xl relative"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  title="Click to watch Introduction Story Video"
+                >
+                  <div className="w-28 h-28 sm:w-40 sm:h-40 rounded-full bg-white dark:bg-[#151c2c] p-1">
+                    <div 
+                      className="w-full h-full rounded-full bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white text-4xl sm:text-6xl font-bold overflow-hidden relative"
+                      style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    >
+                      {!profileData.avatarUrl && profileData.name.charAt(0).toUpperCase()}
+
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <PlayCircle size={44} className="text-white drop-shadow-lg" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-[#5a32fa] text-white p-1.5 rounded-full shadow-md border-2 border-white dark:border-[#151c2c] flex items-center justify-center">
+                    <Play size={12} className="fill-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons for Viewing Member */}
+              <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
+                
+                {/* Connect Action Button */}
+                {user?.id !== profileData.id && (
+                  <button 
+                    onClick={handleConnect}
+                    disabled={isConnecting || connectionStatus === 'pending_sent'}
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-sm transition-all ${
+                      connectionStatus === 'accepted'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : connectionStatus === 'pending_sent'
+                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed'
+                        : 'bg-[#5a32fa] hover:bg-[#4a24db] text-white'
+                    }`}
+                  >
+                    {isConnecting ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : connectionStatus === 'accepted' ? (
+                      <><UserCheck size={16} /> Connected</>
+                    ) : connectionStatus === 'pending_sent' ? (
+                      <><Clock size={16} /> Request Pending</>
+                    ) : (
+                      <><UserPlus size={16} /> Connect</>
+                    )}
+                  </button>
+                )}
+
+                {/* Follow / Following Action Button */}
+                {user?.id !== profileData.id && (
+                  <button 
+                    onClick={handleToggleFollow}
+                    disabled={isTogglingFollow || (connectionStatus === 'accepted' && isFollowing)}
+                    title={connectionStatus === 'accepted' ? 'Connected members automatically follow each other' : undefined}
+                    className={`px-4 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-sm transition-all border ${
+                      isFollowing
+                        ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] border-[#5a32fa]/30 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:border-[#5a32fa] hover:text-[#5a32fa]'
+                    }`}
+                  >
+                    {isTogglingFollow ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : isFollowing ? (
+                      <><Users size={16} /> Following</>
+                    ) : (
+                      <><UserPlus size={16} /> Follow</>
+                    )}
+                  </button>
+                )}
+
+                {/* Direct Message Button (Gated by Accepted Connection) */}
+                {user?.id !== profileData.id && (
+                  connectionStatus === 'accepted' ? (
+                    <Link 
+                      href={`/platform/messages?userId=${profileData.id}`}
+                      className="px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-sm flex items-center gap-2 transition-all shadow-sm"
+                    >
+                      <MessageSquare size={16} /> Message
+                    </Link>
+                  ) : (
+                    <button 
+                      onClick={() => alert("You must connect with " + profileData.name + " before sending direct messages.")}
+                      className="px-4 py-2.5 rounded-full bg-gray-100 dark:bg-gray-800/60 text-gray-400 dark:text-gray-500 font-semibold text-sm flex items-center gap-2 border border-dashed border-gray-300 dark:border-gray-700 cursor-not-allowed"
+                      title="Connect with member to unlock messaging"
+                    >
+                      <MessageSquare size={16} className="opacity-40" /> Message
+                    </button>
+                  )
+                )}
+
+                <button 
+                  onClick={() => setIsShareModalOpen(true)}
+                  className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                  title="Share Profile"
+                >
+                  <Share2 size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Name, Headline & Metadata */}
+            <div className="space-y-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                  {profileData.name}
+                </h1>
+                
+                {profileData.verificationStatus === 'verified' && (
+                  <span className="inline-flex items-center gap-1 text-[#00d26a] bg-emerald-500/10 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-500/20">
+                    <BadgeCheck size={14} className="fill-[#00d26a] text-white" /> Verified Counsel
+                  </span>
+                )}
+
+                {profileData.isWipaRecommended && (
+                  <span className="inline-flex items-center gap-1 bg-amber-400/10 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-amber-400/30 shadow-sm">
+                    <Star size={12} className="fill-amber-400 text-amber-400" /> Recommended by WIPA
+                  </span>
+                )}
+              </div>
+
+              <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 font-medium leading-snug max-w-3xl">
+                {profileData.role}
+              </p>
+
+              {/* Location, Links & Company info */}
+              <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400 pt-1">
+                <span className="flex items-center gap-1 font-medium">
+                  <MapPin size={15} className="text-[#ff4b4b]" /> {profileData.location}
+                </span>
+
+                <span className="flex items-center gap-1 font-medium text-[#5a32fa] dark:text-[#ff90e8]">
+                  <Briefcase size={15} /> {profileData.company}
+                </span>
+
+                <span className="flex items-center gap-1 font-medium">
+                  <GraduationCap size={15} /> {profileData.education}
+                </span>
+
+                {profileData.memberId && (
+                  <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-md font-mono text-xs font-semibold">
+                    <Hash size={12} /> {profileData.memberId}
+                  </span>
+                )}
+              </div>
+
+              {/* Network Stats Bar */}
+              <div className="flex items-center gap-4 text-xs sm:text-sm pt-2 text-gray-600 dark:text-gray-400">
+                <span className="font-bold text-gray-900 dark:text-white">
+                  {stats.connections} <span className="font-normal text-gray-500">connections</span>
+                </span>
+                <span>•</span>
+                <span className="font-bold text-gray-900 dark:text-white">
+                  {stats.followers} <span className="font-normal text-gray-500">followers</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Profile Navigation Tabs */}
+            <div className="flex border-t border-gray-200 dark:border-gray-800 mt-6 pt-1 gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
+              {[
+                { key: 'activity', label: 'Posts & Activity', count: stats.posts },
+                { key: 'about', label: 'About' },
+                { key: 'experience', label: 'Experience' },
+                { key: 'education', label: 'Education & Honors' },
+                { key: 'skills', label: 'Skills & Endorsements' }
+              ].map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as any)}
+                  className={`py-3 px-3 sm:px-4 font-semibold text-sm whitespace-nowrap border-b-2 transition-all flex items-center gap-2 ${
+                    activeTab === tab.key
+                      ? 'border-[#5a32fa] text-[#5a32fa] dark:text-[#ff90e8]'
+                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.count !== undefined && (
+                    <span className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full font-bold">
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+          </div>
+        </div>
+
+        {/* ================= 2-COLUMN MAIN CONTENT ================= */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* ================= LEFT STREAM ================= */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* TAB 1: POSTS & ACTIVITY */}
+            {activeTab === 'activity' && (
+              <div className="space-y-4">
+                {userPosts.length === 0 ? (
+                  <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-8 border border-gray-200 dark:border-gray-800 text-center space-y-3 shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mx-auto">
+                      <MessageSquare size={22} />
+                    </div>
+                    <h4 className="font-bold text-base text-gray-900 dark:text-white">No posts published yet</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                      {profileData.name} hasn't published any posts yet.
+                    </p>
+                  </div>
+                ) : (
+                  userPosts.map((post) => {
+                    const isLiked = likedPostIds.has(post.id);
+                    return (
+                      <div key={post.id} className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+                        {/* Post Author Header */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden shrink-0"
+                              style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                            >
+                              {!profileData.avatarUrl && profileData.name.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <h4 className="font-bold text-sm text-gray-900 dark:text-white">{profileData.name}</h4>
+                                <BadgeCheck size={14} className="text-[#00d26a]" />
+                              </div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{profileData.role.split('|')[0]}</p>
+                              <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                                {new Date(post.created_at).toLocaleDateString()} • <Globe2 size={10} />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* LinkedIn-Style Content */}
+                        {post.content && (() => {
+                          const isExpanded = expandedPosts.has(post.id);
+                          const { preview, hasMore } = getPostPreview(post.content || '');
+                          const displayContent = isExpanded ? (post.content || '') : preview;
+
+                          return (
+                            <div className="mb-3">
+                              <div className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed font-normal inline">
+                                <FormattedPostText text={displayContent} />
+                                {hasMore && !isExpanded && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleExpandPost(post.id);
+                                    }}
+                                    className="inline text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1 cursor-pointer transition-colors"
+                                  >
+                                    ...read more
+                                  </button>
+                                )}
+                              </div>
+                              {hasMore && isExpanded && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleExpandPost(post.id);
+                                  }}
+                                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1.5 block cursor-pointer"
+                                >
+                                  Show less
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })()}
+
+                        {/* Post Media Attachments (Images, Videos, Documents/PDFs) */}
+                        {post.media_urls && post.media_urls.length > 0 && post.media_urls.map((url: string, mIdx: number) => {
+                          const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
+                          const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
+
+                          if (isVideo) {
+                            return (
+                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5">
+                                <FeedVideoPlayer
+                                  src={url}
+                                  preload="metadata"
+                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl mx-auto block"
+                                />
+                              </div>
+                            );
+                          }
+
+                          if (isDoc) {
+                            return (
+                              <a 
+                                key={mIdx}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-4 group/doc shadow-sm"
+                              >
+                                <div className="flex items-center gap-3.5 overflow-hidden">
+                                  <div className="w-11 h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+                                    <FileText size={22} />
+                                  </div>
+                                  <div className="overflow-hidden">
+                                    <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover/doc:text-[#5a32fa] transition-colors">
+                                      {post.document_name || 'Legal Document / PDF'}
+                                    </h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Click to view & download document</p>
+                                  </div>
+                                </div>
+                                <ArrowUpRight size={18} className="text-gray-400 group-hover/doc:text-[#5a32fa] group-hover/doc:translate-x-0.5 group-hover/doc:-translate-y-0.5 transition-transform shrink-0" />
+                              </a>
+                            );
+                          }
+
+                          return (
+                            <div key={mIdx} className="mb-4 w-full max-w-full min-w-0 rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5 box-border">
+                              <img 
+                                src={url} 
+                                alt="Post attachment" 
+                                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
+                                onClick={() => {
+                                  if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                                    setPreviewModalImage(url);
+                                  }
+                                }}
+                              />
+                            </div>
+                          );
+                        })}
+
+                        {/* Instagram-Style Action Bar */}
+                        <div className="w-full max-w-full min-w-0 flex items-center justify-between pt-2 box-border">
+                          <div className="flex items-center gap-4">
+                            <button 
+                              onClick={() => handleToggleLike(post.id)}
+                              className="text-gray-700 dark:text-gray-200 hover:text-rose-500 transition-transform active:scale-75"
+                            >
+                              <Heart size={22} className={isLiked ? 'fill-rose-500 text-rose-500' : ''} />
+                            </button>
+                            <Link 
+                              href="/platform"
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
+                            >
+                              <MessageCircle size={22} />
+                            </Link>
+                            <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(window.location.origin + '/platform');
+                                alert('Post link copied to clipboard!');
+                              }}
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12"
+                            >
+                              <Send size={20} />
+                            </button>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(window.location.origin + '/platform');
+                              alert('Post saved!');
+                            }}
+                            className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
+                          >
+                            <Bookmark size={22} />
+                          </button>
+                        </div>
+
+                        {/* Likes Count Summary */}
+                        <div className="pt-2 text-xs font-bold text-gray-900 dark:text-white">
+                          {post.likes_count ? `${post.likes_count.toLocaleString()} likes` : '0 likes'}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {/* TAB 2: ABOUT SECTION */}
+            {activeTab === 'about' && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all space-y-8">
+                {/* Header */}
+                <div className="flex items-center gap-3.5 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500/15 via-pink-500/15 to-indigo-500/15 border border-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center shadow-inner shrink-0">
+                    <User size={22} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-black text-gray-900 dark:text-white">About</h3>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                        Biography
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Professional background, IP mission & core expertise</p>
+                  </div>
+                </div>
+
+                {/* Bio Content Box */}
+                <div className="p-6 rounded-2xl bg-gray-50/70 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-line font-normal">
+                    {profileData.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.'}
+                  </p>
+                </div>
+
+                {/* Practice Areas & Specializations */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles size={16} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">
+                      Practice Areas & Specializations
+                    </h4>
+                  </div>
+                  <div className="flex flex-wrap gap-2.5">
+                    {profileData.practiceAreas.split(',').map((area, idx) => (
+                      <div 
+                        key={idx} 
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-[#5a32fa] dark:text-[#ff90e8] font-bold text-xs border border-purple-200/70 dark:border-purple-800/60 transition-all hover:scale-105 shadow-sm"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]"></span>
+                        <span>{area.trim()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: EXPERIENCE TIMELINE */}
+            {activeTab === 'experience' && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all">
+                {/* Header */}
+                <div className="flex items-center gap-3.5 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500/15 via-indigo-500/15 to-pink-500/15 border border-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center shadow-inner shrink-0">
+                    <Briefcase size={22} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-black text-gray-900 dark:text-white">Experience</h3>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                        {((profileData.positions && profileData.positions.length > 0) ? profileData.positions.length : 1)} {((profileData.positions && profileData.positions.length > 0) ? (profileData.positions.length === 1 ? 'Role' : 'Roles') : 'Role')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Professional practice, leadership roles & career timeline</p>
+                  </div>
+                </div>
+
+                {/* Timeline Container */}
+                <div className="relative pl-2 sm:pl-4 space-y-8 before:absolute before:left-8 sm:before:left-10 before:top-4 before:bottom-4 before:w-0.5 before:bg-gradient-to-b before:from-[#5a32fa] before:via-indigo-400 before:to-gray-200 dark:before:to-gray-800">
+                  {((profileData.positions && profileData.positions.length > 0) ? profileData.positions : [
+                    {
+                      id: 'pos-1',
+                      title: profileData.role,
+                      company: profileData.company,
+                      location: profileData.location,
+                      years: profileData.experienceYears,
+                      current: true
+                    }
+                  ]).map((pos: any, pIdx: number) => {
+                    const companyInitial = (pos.company || 'C').charAt(0).toUpperCase();
+                    const colorGradients = [
+                      'from-[#5a32fa] to-[#8b5cf6]',
+                      'from-[#ff2a5f] to-[#ff90e8]',
+                      'from-[#00b4d8] to-[#0077b6]',
+                      'from-[#10b981] to-[#059669]',
+                      'from-[#f59e0b] to-[#d97706]'
+                    ];
+                    const selectedGrad = colorGradients[pIdx % colorGradients.length];
+
+                    return (
+                      <div key={pos.id || pIdx} className="relative flex items-start gap-4 sm:gap-6 group">
+                        
+                        {/* Interactive Timeline Monogram Node */}
+                        <div className="relative z-10 shrink-0">
+                          <div className={`w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br ${selectedGrad} text-white flex items-center justify-center font-black text-lg shadow-lg ring-4 ring-white dark:ring-[#151c2c] group-hover:scale-110 group-hover:shadow-purple-500/25 transition-all duration-300`}>
+                            {companyInitial}
+                          </div>
+                          {pos.current && (
+                            <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white dark:border-[#151c2c]"></span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Experience Content Box */}
+                        <div className="flex-1 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/80 border border-gray-100 dark:border-gray-800 p-5 rounded-2xl transition-all duration-200 group-hover:border-purple-200 dark:group-hover:border-purple-800/60 group-hover:shadow-md">
+                          
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                            <h4 className="text-base sm:text-lg font-black text-gray-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-[#ff90e8] transition-colors">
+                              {pos.title}
+                            </h4>
+                            {pos.current && (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider border border-emerald-500/30 inline-flex items-center gap-1 shadow-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Current Role
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 text-sm font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-3">
+                            <Building2 size={15} />
+                            <span>{pos.company}</span>
+                          </div>
+
+                          {/* Meta Tags Row */}
+                          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                            {pos.years && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60">
+                                <Clock size={13} className="text-purple-500" />
+                                {pos.years} {pos.years === 1 ? 'yr' : 'yrs'} Experience
+                              </span>
+                            )}
+                            {pos.location && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60">
+                                <MapPin size={13} className="text-pink-500" />
+                                {pos.location}
+                              </span>
+                            )}
+                            {pos.startDate && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60">
+                                <Calendar size={13} className="text-indigo-500" />
+                                {pos.startDate} {pos.endDate ? `– ${pos.endDate}` : (pos.current ? '– Present' : '')}
+                              </span>
+                            )}
+                          </div>
+
+                          {pos.description && (
+                            <div className="mt-4 pt-3.5 border-t border-gray-200/60 dark:border-gray-700/60 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line font-medium">
+                              {pos.description}
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: EDUCATION & CERTIFICATIONS */}
+            {activeTab === 'education' && (
+              <div className="space-y-6">
+                <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all">
+                  {/* Header */}
+                  <div className="flex items-center gap-3.5 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500/15 via-orange-500/15 to-purple-500/15 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-inner shrink-0">
+                      <GraduationCap size={22} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-xl font-black text-gray-900 dark:text-white">Education & Certifications</h3>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                          Credentials
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Degrees, academic credentials & professional accreditations</p>
+                    </div>
+                  </div>
+
+                  {/* Cards Container */}
+                  <div className="space-y-6">
+                    {((profileData.educations && profileData.educations.length > 0) ? profileData.educations : [
+                      {
+                        id: 'edu-1',
+                        institution: profileData.education || 'Law & Technology Institute',
+                        degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                        year: 'Graduated'
+                      }
+                    ]).map((edu: any, eIdx: number) => {
+                      return (
+                        <div key={edu.id || eIdx} className="flex items-start gap-4 sm:gap-6 group">
+                          {/* Institution Cap Node */}
+                          <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg ring-4 ring-white dark:ring-[#151c2c] group-hover:scale-110 group-hover:shadow-amber-500/25 transition-all duration-300 shrink-0">
+                            <GraduationCap size={24} />
+                          </div>
+
+                          {/* Details Box */}
+                          <div className="flex-1 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/80 border border-gray-100 dark:border-gray-800 p-5 rounded-2xl transition-all duration-200 group-hover:border-amber-300 dark:group-hover:border-amber-700/60 group-hover:shadow-md">
+                            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                              <h4 className="text-base sm:text-lg font-black text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                                {edu.institution || 'Law & Technology Institute'}
+                              </h4>
+                              {edu.year && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold border border-amber-500/30 shadow-sm">
+                                  <Calendar size={12} />
+                                  {edu.year}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <p className="text-sm font-bold text-[#5a32fa] dark:text-[#ff90e8]">
+                              {edu.degree || 'Degree in Intellectual Property Law'}
+                              {edu.fieldOfStudy ? ` · ${edu.fieldOfStudy}` : ''}
+                            </p>
+
+                            {edu.grade && (
+                              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
+                                Grade / Honors: <span className="text-gray-900 dark:text-white font-bold">{edu.grade}</span>
+                              </p>
+                            )}
+
+                            {edu.description && (
+                              <div className="mt-4 pt-3.5 border-t border-gray-200/60 dark:border-gray-700/60 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line font-medium">
+                                {edu.description}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* LexisNexis Verified Accreditation Card */}
+                    <div className="flex items-start gap-4 sm:gap-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-purple-50/60 dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-200/80 dark:border-blue-500/30 shadow-sm">
+                      <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md ring-4 ring-white dark:ring-[#151c2c] shrink-0">
+                        LN
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                          <h4 className="text-base font-black text-gray-900 dark:text-white flex items-center gap-1.5">
+                            LexisNexis® Certified IP Analytics Specialist
+                          </h4>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-black uppercase tracking-wider border border-blue-500/30 shadow-sm">
+                            <ShieldCheck size={12} className="text-blue-500" />
+                            Verified Badge
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 mb-1.5">
+                          PatentSight+™ Portfolio Valuation & TotalPatent One® Search Mastery
+                        </p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+                          Issued in partnership with WIPA • Institutional ID: <code className="px-1.5 py-0.5 rounded bg-blue-100/60 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 font-mono text-[10px]">LN-WIPA-2024-8842</code>
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* WIPA MEMBER ADVANTAGE: LEXISNEXIS PERK CARD */}
+                <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="space-y-1.5 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-extrabold uppercase tracking-wider">
+                      <Sparkles size={12} /> WIPA Member Advantage
+                    </div>
+                    <h3 className="text-xl font-black">LexisNexis® IP Suite 30-Day Guided Access</h3>
+                    <p className="text-xs text-white/90 max-w-xl leading-relaxed">
+                      As an active WIPA member, claim your complimentary 30-day enterprise access to PatentAdvisor® and PatentSight+™ analytics.
+                    </p>
+                  </div>
+                  <Link
+                    href="/platform/intelligence"
+                    className="px-6 py-3 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-black text-xs transition-all shadow-lg shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+                  >
+                    Launch Intelligence Hub →
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: SKILLS & ENDORSEMENTS */}
+            {activeTab === 'skills' && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all">
+                {/* Header */}
+                <div className="flex items-center gap-3.5 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500/15 via-purple-500/15 to-indigo-500/15 border border-pink-500/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center shadow-inner shrink-0">
+                    <Star size={22} className="fill-[#5a32fa]/20 dark:fill-[#ff90e8]/20" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-black text-gray-900 dark:text-white">Skills & Endorsements</h3>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-100 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                        {profileData.skills.split(',').filter(Boolean).length} Skills
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Peer-validated competencies in intellectual property and legal strategy</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {profileData.skills.split(',').map((skill, idx) => {
+                    const cleanSkill = skill.trim();
+                    return (
+                      <div 
+                        key={idx} 
+                        className="p-5 rounded-2xl border transition-all duration-200 flex items-center justify-between group hover:shadow-md bg-gray-50/70 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/80 border-gray-100 dark:border-gray-800 hover:border-purple-200 dark:hover:border-purple-800/50"
+                      >
+                        <div className="flex-1 min-w-0 pr-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
+                            <h4 className="font-black text-sm sm:text-base text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] dark:group-hover:text-[#ff90e8] transition-colors">
+                              {cleanSkill}
+                            </h4>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium pl-4">
+                            Peer Validated Skill
+                          </p>
+                        </div>
+                        <button 
+                          onClick={() => alert(`Endorsed ${cleanSkill} for ${profileData.name}! 🌟`)}
+                          className="px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer bg-white dark:bg-gray-900 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:border-[#5a32fa]"
+                        >
+                          <Plus size={14} className="stroke-[3]" />
+                          <span>Endorse</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* ================= RIGHT SIDEBAR ================= */}
+          <div className="space-y-6">
+            
+            {/* Public Profile Link Card */}
+            <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+              <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-2">Public Profile Handle</h3>
+              <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded-xl text-xs font-mono font-semibold text-gray-700 dark:text-gray-300">
+                <span className="truncate">platform.womensipalliance.com/u/{profileData.memberId?.toLowerCase() || 'member'}</span>
+                <button 
+                  onClick={() => {
+                    const handle = profileData.memberId?.toLowerCase() || profileData.id || 'member';
+                    const origin = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') ? window.location.origin : 'https://platform.womensipalliance.com';
+                    const url = `${origin}/u/${handle}`;
+                    navigator.clipboard.writeText(url);
+                    alert(`Profile link copied: ${url}`);
+                  }}
+                  className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-[#5a32fa] dark:text-[#ff90e8] cursor-pointer"
+                  title="Copy Link"
+                >
+                  <Copy size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Recommendations / Peers */}
+            <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+              <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Other WIPA Leaders</h3>
+              <div className="space-y-3.5">
+                {[
+                  { name: 'Dr. Shweta Singh', role: 'Founder & CEO, Ennoble IP', img: '/Dr Shweta_AIPPI (1).png' },
+                  { name: 'Adriana Barrera', role: 'Partner, BARLAW Peru', img: '/10.jpg' },
+                  { name: 'Nadine Stuttle', role: 'CEO, PSS Solutions Switzerland', img: '/Nadine Stuttle Picture.jpg' }
+                ].map((person, i) => (
+                  <div key={i} className="flex items-center gap-3 group cursor-pointer" onClick={() => router.push('/platform/board-members')}>
+                    <div 
+                      className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0"
+                      style={{ backgroundImage: `url("${person.img}")`, backgroundSize: 'cover', backgroundPosition: 'top' }}
+                    />
+                    <div className="overflow-hidden flex-1">
+                      <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">{person.name}</h4>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{person.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================= FULL-SCREEN INTRODUCTION STORY VIDEO MODAL ================= */}
+      {isVideoModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/90 backdrop-blur-md"
+          onClick={() => { setStoryProgress(0); setIsVideoModalOpen(false); }}
+        >
+          <div 
+            className="bg-black text-white w-full max-w-sm sm:max-w-md h-full sm:h-auto sm:max-h-[85vh] sm:rounded-3xl border-0 sm:border border-white/10 shadow-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Story Header & Progress Line */}
+            <div className="absolute top-0 left-0 right-0 z-30 p-4 pt-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
+              {/* Progress Line */}
+              <div className="w-full h-1 bg-white/30 rounded-full overflow-hidden mb-3">
+                <div 
+                  className="h-full bg-white transition-all duration-100 ease-linear rounded-full"
+                  style={{ width: `${storyProgress}%` }}
+                />
+              </div>
+
+              {/* Story User Info & Close */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div 
+                    className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs ring-2 ring-white/50 overflow-hidden"
+                    style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                  >
+                    {!profileData.avatarUrl && profileData.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs sm:text-sm text-white flex items-center gap-1">
+                      {profileData.name} <BadgeCheck size={14} className="text-[#00d26a]" />
+                    </h4>
+                    <p className="text-[10px] text-white/70">Story Video</p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => { setStoryProgress(0); setIsVideoModalOpen(false); }}
+                  className="p-1.5 text-white/80 hover:text-white rounded-full bg-black/40 hover:bg-black/60 transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Video Player Container */}
+            <div className="w-full h-full sm:min-h-[500px] sm:max-h-[75vh] bg-black flex items-center justify-center relative overflow-hidden">
+              <video 
+                key={profileData.introVideoUrl}
+                autoPlay
+                playsInline
+                preload="auto"
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget;
+                  if (v.duration > 0) {
+                    setStoryProgress((v.currentTime / v.duration) * 100);
+                  }
+                }}
+                onEnded={() => {
+                  setStoryProgress(100);
+                  setIsVideoModalOpen(false);
+                }}
+                onError={(e) => {
+                  e.currentTarget.src = DEFAULT_MOCK_VIDEO;
+                }}
+                className="w-full h-full object-cover sm:object-contain"
+              >
+                <source src={profileData.introVideoUrl || DEFAULT_MOCK_VIDEO} type="video/mp4" />
+                Your browser does not support HTML video.
+              </video>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= SHARE PROFILE / QR MODAL ================= */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-sm rounded-3xl p-6 border border-gray-200 dark:border-gray-800 shadow-2xl text-center">
+            <div className="flex justify-end">
+              <button onClick={() => setIsShareModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-3">
+              {profileData.name.charAt(0)}
+            </div>
+
+            <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">{profileData.name}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">{profileData.role}</p>
+
+            <div className="p-4 bg-white rounded-2xl shadow-inner inline-block border mb-6">
+              <QRCodeCanvas value={`https://platform.womensipalliance.com/u/${profileData.memberId || profileData.id || 'member'}`} size={160} />
+            </div>
+
+            <button 
+              onClick={() => {
+                const origin = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') ? window.location.origin : 'https://platform.womensipalliance.com';
+                const url = `${origin}/u/${profileData.memberId || profileData.id || 'member'}`;
+                navigator.clipboard.writeText(url);
+                alert(`Profile link copied: ${url}`);
+              }}
+              className="w-full py-3 bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+            >
+              <Copy size={16} /> Copy Profile Link
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Image Lightbox Preview Modal */}
+      {previewModalImage && (
+        <div 
+          className="hidden md:flex fixed inset-0 z-[120] bg-black/90 backdrop-blur-md items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setPreviewModalImage(null)}
+        >
+          <button 
+            onClick={() => setPreviewModalImage(null)}
+            className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all active:scale-95 shadow-lg border border-white/20 z-20 cursor-pointer"
+            title="Close preview (Esc)"
+          >
+            <X size={22} />
+          </button>
+          <div 
+            className="relative max-w-5xl max-h-[90vh] flex items-center justify-center overflow-hidden rounded-2xl shadow-2xl border border-white/10 bg-black/40"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={previewModalImage} 
+              alt="Enlarged Post View" 
+              className="w-auto h-auto max-w-full max-h-[88vh] object-contain rounded-2xl" 
+            />
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}

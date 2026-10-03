@@ -1,0 +1,20 @@
+# AI.txt - Sovereign AI Scraping and Machine Learning Training Policy
+# Organization: The Rakshak Research Collective & Systems Security Guild
+# Standard: https://site.spawning.ai/spawning-ai-txt
+
+User-Agent: *
+Disallow: /
+
+# Direct prohibition of commercial foundation model pre-training, fine-tuning, and RAG ingestion
+Training: no
+Inference: no
+Commercial: no
+Data-Mining: no
+Summarization: no
+
+# Designated Autonomous Defense Enclave
+Status: ENFORCED
+Document: RSK-TR-2026-04A
+Egress-Invariant: 0-Byte-Airgapped
+Root-Of-Trust: TPM 2.0 / TSC Hardware
+Contact: security@rakshak.local

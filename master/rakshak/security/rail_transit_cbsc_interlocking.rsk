@@ -1,0 +1,45 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - RAIL TRANSIT CBTC & ELECTRONIC INTERLOCKING SHIELD
+// Language: Rakshak Security Kernel (RSK)
+// File: security/rail_transit_cbsc_interlocking.rsk
+// Standard: EN 50128 / EN 50129 SIL-4 Railway Signalling & Communications
+// ==============================================================================
+
+shield RailTransitCbscInterlocking {
+    target: "/cbtc/atp/speed_curve/*", "/cbtc/ato/traction/*", "/signalling/interlocking/*", "/trackside/balise/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [0, 1, 7];
+        trap_debugger: true;
+        hardware_watchdog_timeout_ms: 30;
+        fail_safe_brake_relay: true;
+        enforce_2oo3_majority_voting: true;
+    }
+
+    cbtc {
+        enforce_euroradio_safe_packet_layer: true;
+        detect_replay_via_monotonous_counter: true;
+        max_position_uncertainty_meters: 0.5;
+        prohibit_trackside_downgrade: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        isolate_train_control_from_passenger_wifi: true;
+        quarantine_external_dns: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 500;
+        fallback_action: TRIGGER_EMERGENCY_EB_BRAKE;
+        inject_stego_canary: "CBTC_SIL4_HONEY_BALISE_ID_0xFEED";
+        synthesize_decoy: "EURORADIO_TELEGRAM_INTEGRITY_FAULT";
+    }
+
+    rules {
+        assert train.speed_kmh <= train.emergency_brake_profile_kmh;
+        assert packet.sequence_number > session.last_sequence_number;
+    }
+}

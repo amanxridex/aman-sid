@@ -1,0 +1,45 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - TELECOM 5G O-RAN NETWORK SLICE SHIELD
+// Language: Rakshak Security Kernel (RSK)
+// File: security/telecom_5g_oran_slice_shield.rsk
+// Standard: 3GPP TS 33.501 & O-RAN Alliance Security Working Group (WG11)
+// ==============================================================================
+
+shield Telecom5gOranSliceShield {
+    target: "/oran/e2/ric/*", "/oran/o1/management/*", "/gtp_u/user_plane/*", "/5gc/nrf/discovery/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [0, 7, 11];
+        trap_debugger: true;
+        enforce_dpdk_kernel_bypass_memory_guard: true;
+        protect_sr_iov_vf_registers: true;
+    }
+
+    telecom {
+        enforce_suci_concealment: true;
+        prohibit_null_ciphering_nea0: true;
+        require_gtp_u_tunnel_validation: true;
+        max_gtp_teid_allocation_jitter: 1000;
+        oran_near_rt_ric_sandboxing: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        isolate_control_and_user_planes: true;
+        quarantine_external_dns: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 403;
+        fallback_action: TEAR_DOWN_GTP_TUNNEL;
+        inject_stego_canary: "5G_IMSI_CATCHER_HONEY_SUCI_208_95_0019284";
+        synthesize_decoy: "GTP_CAUSE_MANDATORY_IE_INCORRECT";
+    }
+
+    rules {
+        assert packet.gtp_teid != 0;
+        assert slice.sst == 1 || slice.sst == 2 || slice.sst == 3; // eMBB, URLLC, mMTC
+    }
+}

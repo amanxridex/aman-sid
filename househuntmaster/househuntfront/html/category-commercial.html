@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Commercial Properties | HouseHunt</title>
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/category-commercial.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../js/transitions.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+    <div class="seo-content" style="position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">
+        <h2>About this Category</h2>
+        <p>Browse top-tier commercial properties including office spaces, retail shops, and showrooms. Whether you are launching a startup or expanding your enterprise, HouseHunt helps you find the perfect commercial real estate with zero brokerage, maximizing your ROI and business potential.</p>
+    </div>
+
+        <header class="category-header">
+            <button onclick="if(document.referrer && document.referrer !== window.location.href) { window.history.back(); } else { window.location.href = '../index.html'; }" class="back-btn"><i data-lucide="arrow-left"></i></button>
+            <h1>Commercial</h1>
+            <button class="back-btn" id="openMoreFilters"><i data-lucide="sliders-horizontal"></i></button>
+        </header>
+
+        <!-- Buy/Rent Mode Toggle -->
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="Buy">Buy</button>
+            <button class="mode-btn" data-mode="Rent">Rent</button>
+        </div>
+
+        <!-- Top Filters (Always Visible UX) -->
+        <div class="top-filters">
+            <div class="filter-pill-large" id="budgetPill">
+                <span>Budget</span>
+                <span class="value">Any Price</span>
+            </div>
+            <div class="filter-pill-large" id="typePill">
+                <span>Type</span>
+                <span class="value">All Commercial</span>
+            </div>
+            <div class="filter-pill-large" id="areaPill">
+                <span>Area</span>
+                <span class="value">Any Size</span>
+            </div>
+        </div>
+
+        <!-- Quick Chips (Scrollable UX) -->
+        <div class="quick-chips" id="quickChips">
+            <!-- Dynamic chips based on mode -->
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Most Viewed (Jio/Hotstar Style) -->
+            <div class="most-viewed-section">
+                <div class="section-title" style="margin-left: 20px; font-size: 18px; font-weight: 800;">Most Viewed</div>
+                <div class="carousel-container" id="mostViewedList">
+                    <!-- Dynamic carousel cards -->
+                </div>
+            </div>
+
+            <div class="results-info" style="padding: 0 20px; margin-bottom: 15px;">
+                <span id="resultsCount">Loading properties...</span>
+            </div>
+
+            <!-- Bento Grid Section -->
+            <div id="bentoGrid" class="bento-grid">
+                <!-- Dynamic bento cards -->
+            </div>
+
+            <!-- Standard List Section -->
+            <div class="standard-section">
+                <div class="section-title" style="margin-bottom: 15px; font-size: 18px; font-weight: 800;">All Listings</div>
+                <div id="standardList">
+                    <!-- Dynamic standard cards -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Sheet Filters (Advanced) -->
+        <div class="sheet-overlay" id="sheetOverlay"></div>
+        <div class="bottom-sheet" id="filterSheet">
+            <div class="bottom-sheet-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="font-size: 20px; font-weight: 900;">Filters</h2>
+                <button class="back-btn" id="closeFilter" style="width: 36px; height: 36px;"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div id="filterContent">
+                <!-- Mode-specific filters injected here -->
+            </div>
+
+            <button class="apply-btn" id="applyFilters">Apply Filters</button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="../index.html" class="nav-item">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-properties.html" class="nav-item">
+                <i data-lucide="layout-list"></i>
+                <span>My Properties</span>
+            </a>
+            <a href="ai.html" class="nav-item">
+                <div class="ai-video-container" style="width: 23px; height: 23px; display: flex; align-items: center; justify-content: center;">
+                    <video src="../assets/huntai.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                </div>
+                <span>HuntAI</span>
+            </a>
+            <a href="messages.html" class="nav-item">
+                <i data-lucide="message-square"></i>
+                <span>Messages</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i data-lucide="user"></i>
+                <span>More</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script type="module" src="../js/category-commercial.js"></script>
+    <script>lucide.createIcons();</script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

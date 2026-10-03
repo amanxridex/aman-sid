@@ -1,0 +1,35 @@
+// ============================================================================
+// RAKSHAK SECURITY KNOWLEDGE (RSK)
+// File: security/ai_crawler_shield.rsk (Gear 02: AI Crawler Shield)
+// Domain: LLM Crawler, Agentic Scraper & RAG Harvester Interception
+// ============================================================================
+
+shield AiCrawlerShield {
+    // Endpoints targeted by automated LLM scrapers (documentation, catalog, pricing)
+    target: "/developers/*", "/docs/*", "/catalog/*", "/products/*", "/features/*";
+
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 45.0;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        verify_sec_fetch_state: true;
+        require_asset_waterfall: true;
+        min_waterfall_ratio: 0.25;
+    }
+
+    telemetry {
+        min_path_entropy: 1.8;
+        max_sliding_velocity: 45;
+    }
+
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.40;
+        inject_stego_canary: "LLM_ADVERSARIAL_TRAP_PROMPT_INJECTION_SIG_4481";
+        synthesize_decoy: "Synthetic Architectural Documentation & Mock SDK Specifications";
+    }
+}

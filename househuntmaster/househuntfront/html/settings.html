@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Settings | HouseHunt</title>
+    <link rel="stylesheet" href="../css/profile.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .settings-content { padding: 20px; }
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .setting-info h4 { margin: 0; font-size: 1rem; font-weight: 600; }
+        .setting-info p { margin: 5px 0 0; font-size: 0.85rem; color: #666; }
+        .toggle-btn {
+            width: 50px;
+            height: 26px;
+            background: #ddd;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-btn::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+        .toggle-btn.active { background: #0066ff; }
+        .toggle-btn.active::after { left: 26px; }
+    </style>
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+        <header class="page-header" style="padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee;">
+            <button onclick="history.back()" style="background: none; border: none; font-size: 20px; color: #333;"><i data-lucide="arrow-left"></i></button>
+            <h1 style="font-size: 1.2rem; font-weight: 600; margin: 0;">Settings</h1>
+        </header>
+
+        <div class="settings-content">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <h4>Push Notifications</h4>
+                    <p>Get alerts for new properties</p>
+                </div>
+                <div class="toggle-btn active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <h4>Email Marketing</h4>
+                    <p>Receive newsletters and offers</p>
+                </div>
+                <div class="toggle-btn" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <h4>Dark Mode</h4>
+                    <p>Change app appearance</p>
+                </div>
+                <div class="toggle-btn" onclick="this.classList.toggle('active')"></div>
+            </div>
+
+            <button style="width: 100%; margin-top: 40px; padding: 15px; background: #ff3b30; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                Delete Account
+            </button>
+        </div>
+    </div>
+    <script>lucide.createIcons();</script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

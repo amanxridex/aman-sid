@@ -1,0 +1,44 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - CRITICAL INFRASTRUCTURE & SCADA GRID SHIELD
+// Language: Rakshak Security Kernel (RSK)
+// File: security/critical_infrastructure_scada.rsk
+// Standard: IEC 62443-4-2 / NERC CIP-005-7 Cyber Security Electronic Perimeter
+// ==============================================================================
+
+shield CriticalInfrastructureScada {
+    target: "/modbus/tcp/*", "/dnp3/telemetry/*", "/opc_ua/v1/*", "/substation/relay/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [0, 1, 2, 7];
+        trap_debugger: true;
+        hardware_watchdog_timeout_ms: 250;
+        enforce_fail_secure_relay: true;
+    }
+
+    protocol {
+        enforce_function_code_allowlist: [0x01, 0x03, 0x04];
+        prohibit_remote_firmware_flashing: true;
+        max_register_read_span: 64;
+        strict_unit_identifier_bind: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        hardware_diode_simplex_tx_only: false;
+        quarantine_external_dns: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 503;
+        fallback_action: ISOLATE_PHYSICAL_PORT;
+        inject_stego_canary: "SCADA_HONEY_REGISTER_HOLDING_40099";
+        synthesize_decoy: "MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS";
+    }
+
+    rules {
+        assert packet.payload_length <= 260;
+        assert connection.is_local_ot_subnet == true;
+    }
+}

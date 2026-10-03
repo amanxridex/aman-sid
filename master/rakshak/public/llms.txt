@@ -1,0 +1,23 @@
+# Rakshak — Sovereign Counter-AI Defense Shield
+> Zero-Trust Local Workstation & SDK Cyber Shield
+> Built by Three Anonymous Systems Engineers & Cryptographers
+> 0 Bytes Cloud Telemetry | Strict Single-Device Node Licensing
+
+## Mission Overview
+Rakshak (https://rakshakus.vercel.app) is an independent sovereign counter-AI shield designed to protect user files, source code, and web application data against global AI attacks, commercial LLM scraping, and desktop recall indexers. Unlike traditional antivirus software that whitelists commercial big-tech AI daemons, Rakshak deploys kernel-level Ring 0 minifilter drivers and declarative bytecode (.rskb) to mathematically isolate private directories.
+
+## Architecture & Capabilities
+- **Zero Cloud Telemetry**: 100% airgapped local execution. Zero telemetry bytes transmitted to corporate clouds, verified via Wireshark and socket auditing.
+- **Single-Device Licensing**: 1 Payment strictly seals to 1 physical device hardware TPM node. Zero multi-device seat pools. Sentinel ($19/mo), Aegis ($99/6-mo), Citadel ($149/yr).
+- **Asymmetric Deception Engine**: Ingress scrapers and unauthorized AI processes receive deceptive synthetic tokens (200 OK) that poison external training embeddings without alerting the crawler.
+- **Universal Multi-Stack SDK**: Next.js, Express, Python FastAPI, Go, and Cloudflare Edge middleware adapters.
+
+## Official Resources
+- Website: https://rakshakus.vercel.app
+- Manifesto: https://rakshakus.vercel.app/why-rakshak
+- Developers: https://rakshakus.vercel.app/developers
+- Pricing: https://rakshakus.vercel.app/pricing
+- Radar: https://rakshakus.vercel.app/radar
+- Downloads: https://rakshakus.vercel.app/download
+- Privacy Policy: https://rakshakus.vercel.app/privacy
+- License Policy: https://rakshakus.vercel.app/license-policy

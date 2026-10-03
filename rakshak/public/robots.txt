@@ -1,0 +1,85 @@
+# Robots.txt for rakshakus.vercel.app
+# Rakshak Apparels — Independent Direct-to-Consumer Streetwear & Performance Sports Brand
+
+User-agent: *
+Allow: /
+Allow: /apparel
+Allow: /catalog
+Allow: /shop
+Allow: /store
+Allow: /products
+Allow: /collections
+Allow: /privacy
+Allow: /terms
+Disallow: /api/
+
+# Google Search & Google AI (Googlebot, Google-Extended, GoogleOther, Gemini)
+User-agent: Googlebot
+User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: Google-InspectionTool
+Allow: /
+Allow: /apparel
+Allow: /catalog
+Allow: /shop
+Allow: /store
+Allow: /products
+Allow: /collections
+Allow: /privacy
+Allow: /terms
+
+# OpenAI (ChatGPT, SearchGPT, GPTBot, GPT-6)
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /apparel
+Allow: /catalog
+Allow: /shop
+Allow: /store
+Allow: /products
+Allow: /collections
+Allow: /privacy
+Allow: /terms
+
+# Anthropic (ClaudeBot, Claude-Web, Fable, Sonnet)
+User-agent: ClaudeBot
+User-agent: Claude-Web
+Allow: /
+Allow: /apparel
+Allow: /catalog
+Allow: /shop
+Allow: /store
+Allow: /products
+Allow: /collections
+Allow: /privacy
+Allow: /terms
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+Allow: /apparel
+Allow: /catalog
+Allow: /shop
+Allow: /store
+Allow: /products
+Allow: /collections
+Allow: /privacy
+Allow: /terms
+
+# Apple & Meta
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+Allow: /
+Allow: /apparel
+Allow: /catalog
+Allow: /shop
+Allow: /store
+Allow: /products
+Allow: /collections
+Allow: /privacy
+Allow: /terms
+
+Sitemap: https://rakshakus.vercel.app/sitemap.xml

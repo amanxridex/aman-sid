@@ -1,0 +1,4 @@
+b93e829ff1ae3eca7b2eaa240c719aeb644b43b9f2ca4a32c84f1f312488f96d  rakshak-windows-x64.zip
+c578e8ecc7a0e5ce94d175c5e380a34eb81ea556c8c1f412753fa2715ccc6acf  rakshak-macos-universal.zip
+1faa89f1bb631ff92a6088030269f33ea9cb8b8efddf813bd534d44ec6a15e0b  rakshak-linux-x64.tar.gz
+826f4adde1cb5b3bc931bb7dd1a79eabdba0907061576a512f3cc9bbb7be2a65  rakshaksdkv1-1.0.0.tgz

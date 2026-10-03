@@ -1,0 +1,48 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - CLASSIFIED SCIF & AIR-GAP PERIMETER POLICY
+// Language: Rakshak Security Kernel (RSK)
+// File: security/classified_scif_airgap_perimeter.rsk
+// Standard: ICD 705 SCIF Standards & NSTISSAM TEMPEST/2-95 Level A
+// ==============================================================================
+
+shield ClassifiedScifAirgapPerimeter {
+    target: "/scif/vault/*", "/crypto/hsm/key_wrap/*", "/isolated/console/*", "/enclave/black_side/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [0, 1, 2, 7, 11, 12];
+        trap_debugger: true;
+        detect_chassis_intrusion: true;
+        erase_keys_on_tamper_trigger: true;
+        prohibit_rf_bluetooth_wifi: true;
+        zero_unallocated_heap_every_sec: true;
+    }
+
+    acoustic_and_tempest {
+        randomize_cpu_power_draw_spikes: true;
+        inject_ultrasonic_speaker_jamming: false;
+        scramble_vram_refresh_frequency: true;
+        dma_channel_hard_quarantine: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        strictly_zero_external_network_interfaces: true;
+        prohibit_usb_mass_storage: true;
+        require_hardware_interlock_token: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 403;
+        fallback_action: CRYPTOGRAPHIC_SELF_DESTRUCT_KEY_WIPE;
+        inject_stego_canary: "SCIF_HONEY_CLEARANCE_TS_SCI_GAMMA_419";
+        synthesize_decoy: "HARDWARE_DEVICE_I_O_HALT";
+    }
+
+    rules {
+        assert system.has_active_ethernet == false;
+        assert system.has_active_wireless == false;
+        assert system.tpm_tamper_latch_tripped == false;
+    }
+}

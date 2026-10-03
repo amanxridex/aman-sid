@@ -1,0 +1,48 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - AUTONOMOUS AGENTIC QUARANTINE POLICY
+// Language: Rakshak Security Kernel (RSK)
+// File: security/autonomous_agentic_quarantine.rsk
+// Standard: Autonomous AI Agent Containment & Tool Sandbox Guard
+// ==============================================================================
+
+shield AutonomousAgenticQuarantine {
+    target: "/agent/tools/*", "/agent/mcp/*", "/agent/bash/exec", "/agent/filesystem/*";
+
+    hardware {
+        require_tpm_2_0: true;
+        enforce_pcr_measurements: [7];
+        trap_debugger: true;
+        disallow_nested_virtualization: true;
+        enforce_seccomp_bpf: true;
+        prohibit_fork_bombs: true;
+    }
+
+    sandbox {
+        max_memory_mb: 512;
+        max_execution_time_ms: 15000;
+        max_subprocesses: 0;
+        chroot_jail_path: "/var/empty";
+        read_only_root_filesystem: true;
+        drop_all_capabilities: true;
+    }
+
+    airgap {
+        enforce_zero_byte_egress: true;
+        block_all_outbound_sockets: true;
+        permit_uds_control_channel_only: true;
+    }
+
+    defense {
+        mode: HARD_QUARANTINE;
+        status_code: 403;
+        fallback_action: TERMINATE_PROCESS_TREE;
+        inject_stego_canary: "AGENTIC_LOOP_ESCAPE_TRIPWIRE_0x5F3759DF";
+        synthesize_decoy: "PERMISSION_DENIED_SANDBOX_POLICY_ENFORCED";
+    }
+
+    rules {
+        assert process.uid != 0;
+        assert process.open_file_descriptors <= 16;
+        assert network.outbound_connections == 0;
+    }
+}

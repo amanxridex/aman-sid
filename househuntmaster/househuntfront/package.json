@@ -1,0 +1,17 @@
+{
+  "name": "househunt-frontend",
+  "version": "1.0.0",
+  "description": "HouseHunt - Luxury Real Estate Portal for Delhi NCR",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "real-estate",
+    "delhi-ncr",
+    "househunt"
+  ],
+  "author": "HouseHunt Team",
+  "license": "ISC"
+}

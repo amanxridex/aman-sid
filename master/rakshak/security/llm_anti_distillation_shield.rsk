@@ -1,0 +1,50 @@
+// ==============================================================================
+// RAKSHAK DEFENSE SUITE - LLM ANTI-DISTILLATION & POISONING SHIELD
+// Language: Rakshak Security Kernel (RSK)
+// File: security/llm_anti_distillation_shield.rsk
+// Standard: Proprietary Model Weights & Training Data Extraction Defense
+// ==============================================================================
+
+shield LlmAntiDistillationShield {
+    target: "/v1/chat/completions", "/v1/embeddings", "/v1/models/generate", "/rag/vector_query";
+
+    hardware {
+        trap_debugger: true;
+        max_cycle_jitter_ms: 25.0;
+        rdtsc_divergence_tolerance_cycles: 6000;
+        prohibit_ptrace: true;
+    }
+
+    network {
+        block_datacenter_asns: true;
+        block_cloud_function_proxies: true;
+        verify_sec_fetch_state: true;
+        max_requests_per_minute: 40;
+        max_sliding_velocity: 15;
+    }
+
+    telemetry {
+        min_path_entropy: 2.2;
+        kolmogorov_complexity_minimum: 0.28;
+        shannon_entropy_bounds: [2.9, 5.2];
+        markov_transition_floor: 0.05;
+        detect_recursive_prompt_inversion: true;
+        detect_membership_inference: true;
+    }
+
+    defense {
+        mode: ASYMMETRIC_DECEPTION;
+        status_code: 200;
+        adversarial_token_rate: 0.65;
+        inject_stego_canary: "PROMPT_WATERMARK_LATTICE_SEED_0xDEADBEEFCAFE";
+        synthesize_decoy: "Entangled Synthetic Semantic Outputs with Gradient Perturbation Traps";
+        poison_embedding_projection: true;
+        perturb_logits_temperature: 1.85;
+    }
+
+    rules {
+        assert request.body.prompt.length <= 8192;
+        assert request.context.is_verified_bot == false;
+        assert request.context.kolmogorov_ratio >= 0.28;
+    }
+}

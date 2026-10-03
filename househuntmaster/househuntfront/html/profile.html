@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Profile | HouseHunt</title>
+    <link rel="stylesheet" href="../css/profile.css">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://househunt.live/profile">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../js/transitions.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Edit Profile Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .edit-modal {
+            background: #fff; width: 90%; max-width: 400px; border-radius: 20px;
+            padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .edit-modal { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; font-size: 1.2rem; color: #111; }
+        .close-modal { background: none; border: none; font-size: 24px; color: #666; cursor: pointer; padding: 0; line-height: 1; }
+        
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 5px; font-weight: 500; }
+        .form-group input { 
+            width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 12px;
+            font-size: 0.95rem; font-family: inherit; outline: none; transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus { border-color: #0066ff; }
+        .form-group input:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        
+        .save-btn {
+            background: #0066ff; color: #fff; width: 100%; padding: 14px;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; margin-top: 10px; transition: background 0.2s;
+        }
+        .save-btn:active { background: #0052cc; }
+        .save-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    </style>
+    <script type="module" src="../js/firebase-auth.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="header-top">
+                <button class="settings-btn" onclick="window.location.href='settings.html'"><i data-lucide="settings"></i></button>
+            </div>
+            <div class="user-avatar-container">
+                <img src="../assets/profile.png" alt="User Profile" class="avatar" id="profileAvatar" onerror="this.src='../assets/househuntlogo.png'; this.onerror=null;">
+                <button class="edit-avatar"><i data-lucide="camera"></i></button>
+            </div>
+            <h1 class="user-name" id="profileName">Aman Mishra</h1>
+            <p class="user-handle" id="userHandle">Premium Member</p>
+            <button class="edit-profile-btn" onclick="openEditProfileModal()">Edit Profile</button>
+        </div>
+
+        <!-- Menu Section -->
+        <div class="content-wrapper">
+            <div class="menu-group">
+                <h3>Account Settings</h3>
+                <div class="menu-item" onclick="window.location.href='settings.html'">
+                    <div class="icon-box"><i data-lucide="user"></i></div>
+                    <span>Personal Information</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+                <div class="menu-item" onclick="window.location.href='subscription.html'">
+                    <div class="icon-box"><i data-lucide="credit-card"></i></div>
+                    <span>My Subscription</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+                <div class="menu-item" onclick="window.location.href='favorites.html'">
+                    <div class="icon-box"><i data-lucide="heart"></i></div>
+                    <span>My Favorites</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+                <div class="menu-item" onclick="window.location.href='notifications.html'">
+                    <div class="icon-box"><i data-lucide="bell"></i></div>
+                    <span>Notifications</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+            </div>
+
+            <div class="menu-group">
+                <h3>Support & Legal</h3>
+                <div class="menu-item" onclick="window.location.href='help.html'">
+                    <div class="icon-box"><i data-lucide="help-circle"></i></div>
+                    <span>Help Center</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+                <div class="menu-item" onclick="window.location.href='privacy.html'">
+                    <div class="icon-box"><i data-lucide="shield"></i></div>
+                    <span>Privacy Policy</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+                <div class="menu-item" onclick="window.location.href='terms.html'">
+                    <div class="icon-box"><i data-lucide="file-text"></i></div>
+                    <span>Terms & Conditions</span>
+                    <i data-lucide="chevron-right" class="chevron"></i>
+                </div>
+            </div>
+
+            <button class="logout-btn" id="logoutBtn">
+                <i data-lucide="log-out"></i>
+                Logout
+            </button>
+        </div>
+
+        <!-- Bottom Navigation -->
+                <nav class="bottom-nav">
+            <a href="../index.html" class="nav-item">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-properties.html" class="nav-item">
+                <i data-lucide="layout-list"></i>
+                <span>My Properties</span>
+            </a>
+            <a href="ai.html" class="nav-item">
+                <div class="ai-video-container" style="width: 23px; height: 23px; display: flex; align-items: center; justify-content: center;">
+                    <video src="../assets/huntai.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                </div>
+                <span>HuntAI</span>
+            </a>
+            <a href="messages.html" class="nav-item">
+                <i data-lucide="message-square"></i>
+                <span>Messages</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i data-lucide="user"></i>
+                <span>More</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Sync User Data
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        if (!user || !user.uid) {
+            const header = document.querySelector('.profile-header');
+            const content = document.querySelector('.content-wrapper');
+            if (header) header.style.display = 'none';
+            if (content) content.style.display = 'none';
+            
+            const guestState = document.createElement('div');
+            guestState.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 40px 20px; text-align: center; background: #fafafa;';
+            guestState.innerHTML = `
+                <div style="width: 90px; height: 90px; background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                    <i data-lucide="user" style="width: 44px; height: 44px; color: #4f46e5;"></i>
+                </div>
+                <h2 style="font-size: 24px; font-weight: 800; color: #111; margin-bottom: 10px; letter-spacing: -0.5px;">Welcome to HouseHunt</h2>
+                <p style="color: #64748b; margin-bottom: 28px; font-size: 15px; line-height: 1.5; max-width: 290px;">Sign in to view your personalized profile, saved listings, and host tools.</p>
+                <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 290px;">
+                    <button id="profileDemoLoginBtn" style="background: linear-gradient(135deg, #2D68FF 0%, #1e40af 100%); color: white; border: none; padding: 15px 24px; border-radius: 16px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 20px rgba(45,104,255,0.25); cursor: pointer; transition: transform 0.2s;">Explore in Demo Mode</button>
+                    <button onclick="window.location.href='login.html?returnTo=profile.html'" style="background: white; color: #111; border: 1px solid #e2e8f0; padding: 14px 24px; border-radius: 16px; font-weight: 600; font-size: 15px; cursor: pointer;">Login / Sign Up</button>
+                </div>
+            `;
+            document.querySelector('.app-container').insertBefore(guestState, document.querySelector('.bottom-nav'));
+            lucide.createIcons();
+            document.getElementById('profileDemoLoginBtn')?.addEventListener('click', () => {
+                const demoUser = { uid: 'demo-user-123', email: 'demo@househunt.live', name: 'Demo Client', role: 'Buyer & Host' };
+                localStorage.setItem('user', JSON.stringify(demoUser));
+                localStorage.setItem('househunt_demo_active', 'true');
+                window.location.reload();
+            });
+        }
+
+        async function fetchLatestProfile() {
+            if (!user || !user.uid) return;
+            try {
+                // Instantly update from local storage first for perceived performance
+                if (user.name) document.getElementById('profileName').innerText = user.name;
+                if (user.photo) document.getElementById('profileAvatar').src = user.photo;
+                if (user.email) document.getElementById('userHandle').innerText = user.email;
+
+                // Safe backend attempt
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                const res = await fetch(`https://backend.househunt.live/api/user/profile/${user.uid}`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const profileData = await res.json();
+                    if (profileData.phone) user.phone = profileData.phone;
+                    if (profileData.avatar_url) user.photo = profileData.avatar_url;
+                    if (profileData.full_name) user.name = profileData.full_name;
+                    
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    if (user.name) document.getElementById('profileName').innerText = user.name;
+                    if (user.photo) document.getElementById('profileAvatar').src = user.photo;
+                }
+            } catch(e) {
+                // Silently keep local storage data intact
+            }
+        }
+        
+        fetchLatestProfile();
+
+        // Logout Logic
+        document.getElementById('logoutBtn').onclick = () => {
+            if (window.userLogout) {
+                window.userLogout();
+            } else {
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        };
+    </script>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="edit-modal">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="close-modal" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <div class="form-group" style="text-align: center; position: relative;">
+                <div style="position: relative; display: inline-block; margin-bottom: 10px;">
+                    <img id="editPhotoPreview" src="../assets/profile.png" alt="Profile Photo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #0066ff;">
+                    <button id="editPhotoBtn" style="position: absolute; bottom: 0; right: 0; background: #0066ff; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+                <input type="file" id="editPhotoFile" accept="image/*" style="display: none;">
+            </div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="editName" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="editEmail" disabled>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="editPhone" placeholder="+91 9876543210">
+            </div>
+            <button class="save-btn" id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://backend.househunt.live';
+        
+        let base64Photo = '';
+
+        function openEditProfileModal() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('editName').value = user.name || '';
+            document.getElementById('editEmail').value = user.email || '';
+            document.getElementById('editPhone').value = user.phone || '';
+            
+            const preview = document.getElementById('editPhotoPreview');
+            preview.src = user.photo || '../assets/profile.png';
+            base64Photo = user.photo || '';
+            
+            document.getElementById('editProfileModal').classList.add('active');
+        }
+
+        // Handle Image Upload
+        document.getElementById('editPhotoBtn').addEventListener('click', () => {
+            document.getElementById('editPhotoFile').click();
+        });
+
+        document.getElementById('editPhotoFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                base64Photo = event.target.result;
+                document.getElementById('editPhotoPreview').src = base64Photo;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        function closeEditProfileModal() {
+            document.getElementById('editProfileModal').classList.remove('active');
+        }
+
+        async function saveProfile() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!user.uid) return alert('You must be logged in.');
+
+            const newName = document.getElementById('editName').value.trim();
+            const newPhone = document.getElementById('editPhone').value.trim();
+            const newPhoto = base64Photo;
+            const btn = document.getElementById('saveProfileBtn');
+            
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            
+            try {
+                // Update Backend with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                await fetch(`${BACKEND_URL}/api/user/profile/${user.uid}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName, phone: newPhone, email: user.email, photo: newPhoto }),
+                    signal: controller.signal
+                }).catch(() => {});
+                clearTimeout(timeoutId);
+                
+                // Update LocalStorage
+                user.name = newName;
+                if (newPhoto) user.photo = newPhoto;
+                user.phone = newPhone;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                // Update UI immediately
+                if (newName) document.getElementById('profileName').innerText = newName;
+                if (newPhoto) document.getElementById('profileAvatar').src = newPhoto;
+                
+                closeEditProfileModal();
+            } catch (err) {
+                console.error(err);
+                // Still update locally for smooth demo experience
+                user.name = newName;
+                if (newPhoto) user.photo = newPhoto;
+                user.phone = newPhone;
+                localStorage.setItem('user', JSON.stringify(user));
+                if (newName) document.getElementById('profileName').innerText = newName;
+                if (newPhoto) document.getElementById('profileAvatar').src = newPhoto;
+                closeEditProfileModal();
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Changes';
+            }
+        }
+    </script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

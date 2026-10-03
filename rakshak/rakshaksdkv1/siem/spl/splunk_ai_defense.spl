@@ -1,0 +1,38 @@
+# ============================================================================
+# RAKSHAK CORE - SPLUNK PROCESSING LANGUAGE (SPL) CORRELATION SEARCHES
+# Platform: Splunk Enterprise Security / Splunk Cloud
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. Search: Low Shannon Entropy Path Enumeration (Brute-force Scrapers)
+# ----------------------------------------------------------------------------
+index=web sourcetype=access_combined status=200
+| eval path=lower(uri_path)
+| bin _time span=5m
+| stats count as req_count, dc(path) as unique_paths, values(path) as sample_paths by clientip, useragent, _time
+| where req_count > 50 and unique_paths < 4
+| eval anomaly_ratio=round(unique_paths / req_count, 3)
+| eval threat_type="LOW_ENTROPY_ENDPOINT_HAMMERING"
+| table _time, clientip, useragent, req_count, unique_paths, anomaly_ratio, threat_type
+| sort - req_count
+
+# ----------------------------------------------------------------------------
+# 2. Search: Zero-Asset Subresource Waterfall Extraction
+# ----------------------------------------------------------------------------
+index=web sourcetype=access_combined
+| eval is_asset=if(match(uri_path, "(?i)\.(css|js|woff2|png|jpg|ico)$"), 1, 0)
+| stats count(eval(is_asset=0)) as docs, count(eval(is_asset=1)) as assets by clientip, useragent
+| where docs >= 10 and assets == 0
+| eval threat_score=95
+| eval reason="Client parsed HTML without requesting linked stylesheets or JS assets"
+| table clientip, useragent, docs, assets, threat_score, reason
+
+# ----------------------------------------------------------------------------
+# 3. Search: Datacenter ASN Egress Traffic Impersonating Chrome
+# ----------------------------------------------------------------------------
+index=waf action=allowed
+| lookup asn_intelligence_lookup ip as client_ip OUTPUT asn, org
+| search asn IN ("16509", "15169", "8075", "24940", "14061", "31898")
+| search http_user_agent="*Mozilla/5.0*Chrome/*"
+| stats count by client_ip, asn, org, http_user_agent
+| sort - count

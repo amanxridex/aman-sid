@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>My Properties | HouseHunt</title>
+    <link rel="stylesheet" href="../css/my-properties.css">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://househunt.live/my-properties">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <button onclick="window.location.href='../index.html'" class="back-btn"><i data-lucide="arrow-left"></i></button>
+                <h1>My Properties</h1>
+            </div>
+            <p>Manage your listings and leads</p>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs" id="property-tabs">
+            <div class="tab active" data-tab="active">Active</div>
+            <div class="tab" data-tab="pending">Pending</div>
+            <div class="tab" data-tab="drafts">Drafts</div>
+        </div>
+
+        <!-- Property List -->
+        <div class="content-wrapper" id="properties-container">
+            <!-- Properties will be dynamically rendered here -->
+            <div class="loading-state" id="loading-spinner" style="text-align: center; padding: 40px; color: #666;">
+                <i data-lucide="loader-2" class="spin" style="animation: spin 1s linear infinite;"></i>
+                <p style="margin-top: 10px;">Loading properties...</p>
+            </div>
+            
+            <style>
+                @keyframes spin { 100% { transform: rotate(360deg); } }
+                .empty-state { text-align: center; padding: 40px 20px; color: #666; }
+                .empty-state h3 { color: #111; margin: 15px 0 5px; }
+            </style>
+        </div>
+
+        <!-- Floating Post Button -->
+        <a href="hosttype.html" class="floating-add">
+            <i data-lucide="plus"></i>
+        </a>
+
+        <!-- Bottom Navigation -->
+                <nav class="bottom-nav">
+            <a href="../index.html" class="nav-item">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-properties.html" class="nav-item">
+                <i data-lucide="layout-list"></i>
+                <span>My Properties</span>
+            </a>
+            <a href="ai.html" class="nav-item">
+                <div class="ai-video-container" style="width: 23px; height: 23px; display: flex; align-items: center; justify-content: center;">
+                    <video src="../assets/huntai.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                </div>
+                <span>HuntAI</span>
+            </a>
+            <a href="messages.html" class="nav-item">
+                <i data-lucide="message-square"></i>
+                <span>Messages</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i data-lucide="user"></i>
+                <span>More</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="../js/my-properties.js"></script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

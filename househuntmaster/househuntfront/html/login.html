@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Login | HouseHunt</title>
+    <meta name="description" content="Log in to your HouseHunt account to manage your properties, view favorites, and connect directly with owners.">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../js/transitions.js"></script>
+    <script type="module" src="../js/auth-guard.js"></script>
+    <style>
+        .login-screen {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 25px;
+            color: white;
+        }
+        .login-content {
+            animation: slideUp 0.8s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .login-content h1 { font-size: 38px; font-weight: 800; line-height: 1.1; margin-bottom: 15px; }
+        .login-content p { font-size: 16px; opacity: 0.9; margin-bottom: 40px; line-height: 1.5; }
+        
+        .google-btn {
+            background: white;
+            color: #111;
+            padding: 18px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .google-btn:active { transform: scale(0.98); }
+        .google-btn img { width: 24px; }
+        
+        .guest-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.85;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../sw.js').then(reg => {
+                    console.log('SW Registered!', reg);
+                }).catch(err => {
+                    console.log('SW Registration Failed', err);
+                });
+            });
+        }
+    </script>
+    <div class="app-container">
+        <div class="login-screen">
+            <div class="login-content">
+                <h1>Find Your<br>Dream Home<br>Today.</h1>
+                <p>Join thousands of happy homeowners finding their perfect space with HouseHunt.</p>
+                
+                <button class="google-btn" onclick="signInWithGoogle()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Continue with Google
+                </button>
+                
+                <button class="demo-btn" onclick="continueAsDemoUser()" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(10px); padding: 16px; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: 15px; cursor: pointer; width: 100%; margin-top: 12px; transition: transform 0.2s;">
+                    <span>✨ Explore in Demo Mode</span>
+                </button>
+
+                <div class="guest-link" onclick="window.location.href='../index.html'">
+                    Continue as Guest
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.continueAsDemoUser = () => {
+            localStorage.setItem('user', JSON.stringify({
+                uid: "demo-client-101",
+                name: "Demo Buyer & Host",
+                email: "demo@househunt.live",
+                photo: "../assets/profile.png"
+            }));
+            const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+            window.location.href = returnTo ? returnTo : '../index.html';
+        };
+    </script>
+    <script type="module" src="../js/firebase-auth.js"></script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+# Overrides
+
+Linguist supports a number of different custom override strategies for language definitions and file paths.
+
+## Using gitattributes
+
+Add [a `.gitattributes` file](https://git-scm.com/docs/gitattributes) to your project and use standard git-style path matchers for the files you want to override using the `linguist-documentation`, `linguist-language`, `linguist-vendored`, `linguist-generated`  and `linguist-detectable` attributes.
+`.gitattributes` will be used to determine language statistics and will be used to syntax highlight files.
+You can also manually set syntax highlighting using [Vim or Emacs modelines](#using-emacs-or-vim-modelines).
+
+When testing with a local installation of Linguist, **take note that the added attributes will _not_ take effect until the `.gitattributes` file is committed to your repository.**
+
+File and folder paths inside `.gitattributes` are calculated relative to the position of the `.gitattributes` file.
+
+```gitattributes
+# Example of a `.gitattributes` file which reclassifies `.rb` files as Java:
+*.rb linguist-language=Java
+
+# Replace any whitespace in the language name with hyphens:
+*.glyphs linguist-language=OpenStep-Property-List
+
+# Language names are case-insensitive and may be specified using an alias.
+# So, the following three lines are all functionally equivalent:
+*.es linguist-language=js
+*.es linguist-language=JS
+*.es linguist-language=JAVASCRIPT
+```
+
+### Summary
+
+<!------------------------------------------------------------------------------------------------------------------------------------------->
+ | Git attribute                                  | Defined in            | Effect on file                                                  |
+ |:-----------------------------------------------|:----------------------|:----------------------------------------------------------------|
+ | `linguist-detectable`                          | [`languages.yml`]     | Included in sta

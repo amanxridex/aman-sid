@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Property Details | HouseHunt</title>
+    <link rel="stylesheet" href="../css/property-view.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/assets/mainappicon.png">
+</head>
+<body>
+    
+    <div id="propertyLoadingScreen" class="premium-loader-wrapper">
+        <div class="premium-loader">
+            <div class="house-icon-wrapper">
+                <i data-lucide="home" class="house-icon"></i>
+            </div>
+            <div class="loader-pulse"></div>
+        </div>
+        <h2 class="loading-title">Discovering your dream home</h2>
+        <p id="loadingQuote" class="loading-quote"></p>
+        
+        <style>
+            .premium-loader-wrapper {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                z-index: 9999; display: flex; flex-direction: column; 
+                align-items: center; justify-content: center; text-align: center; padding: 20px;
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            }
+            .premium-loader {
+                position: relative; width: 80px; height: 80px; margin-bottom: 25px;
+                display: flex; align-items: center; justify-content: center;
+            }
+            .house-icon-wrapper {
+                position: relative; z-index: 2; width: 60px; height: 60px;
+                background: white; border-radius: 50%; display: flex;
+                align-items: center; justify-content: center;
+                box-shadow: 0 10px 25px -5px rgba(0, 102, 255, 0.3);
+                animation: float 3s ease-in-out infinite;
+            }
+            .house-icon { width: 30px; height: 30px; color: #0066ff; }
+            .loader-pulse {
+                position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                width: 60px; height: 60px; background: rgba(0, 102, 255, 0.2);
+                border-radius: 50%; z-index: 1;
+                animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            }
+            .loading-title {
+                color: #0f172a; font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;
+                background: linear-gradient(90deg, #0f172a, #0066ff);
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            }
+            .loading-quote {
+                color: #64748b; font-style: italic; font-size: 0.95rem; max-width: 280px;
+                line-height: 1.5; opacity: 0.9;
+            }
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+            @keyframes pulse-ring {
+                0% { width: 60px; height: 60px; opacity: 1; }
+                100% { width: 140px; height: 140px; opacity: 0; }
+            }
+        </style>
+    </div>
+
+    <main class="app-container content-wrapper" style="display: none;" id="mainContent">
+        
+        <section class="image-gallery">
+            <button class="floating-back" id="propertyBackButton">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <button class="floating-share" id="propertyShareButton">
+                <i data-lucide="share-2"></i>
+            </button>
+            <div class="carousel-container" id="imageCarousel">
+                <!-- Images injected by JS -->
+            </div>
+            <div class="gallery-badge" id="galleryBadge">
+                <i data-lucide="image"></i> <span id="currentImageIndex">1</span>/<span id="totalImagesCount">1</span>
+            </div>
+        </section>
+
+        <article class="property-content info-section">
+            <header class="header-info">
+                <div class="price-row">
+                    <h1 class="price">₹ 85.50 L</h1>
+                    <div class="type-tag">For Sale</div>
+                </div>
+                <h2 class="title">Modern 3BHK Apartment</h2>
+                <p class="location"><i data-lucide="map-pin"></i> Sector 62, Noida, Uttar Pradesh</p>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i data-lucide="maximize"></i>
+                        <span>1850 Sqft</span>
+                    </div>
+                    <div class="stat-card">
+                        <i data-lucide="bed"></i>
+                        <span>3 BHK</span>
+                    </div>
+                    <div class="stat-card">
+                        <i data-lucide="bath"></i>
+                        <span>3 Bath</span>
+                    </div>
+                    <div class="stat-card">
+                        <i data-lucide="navigation"></i>
+                        <span>East Facing</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Description -->
+                <section class="description">
+                    <h3>About this property</h3>
+                    <p id="propDesc">Loading description...</p>
+                </section>
+
+                <div class="divider"></div>
+
+                <!-- All Property Details -->
+                <section class="all-details-section">
+                    <h3>Property Details</h3>
+                    <div class="details-grid" id="fullDetailsGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <style>
+                    .all-details-section { padding: 0 0 20px 0; }
+                    .all-details-section h3 { margin-bottom: 15px; font-size: 1.1rem; color: var(--text-color); font-weight: 600; }
+                    .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                    .detail-row { display: flex; flex-direction: column; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; }
+                    .detail-label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+                    .detail-value { font-size: 0.95rem; color: var(--text-color); font-weight: 500; word-break: break-word; }
+                </style>
+
+                <!-- Amenities -->
+                <section class="amenities">
+                    <h3>Key Amenities</h3>
+                    <div class="amenity-grid">
+                        <div class="amenity-item"><i data-lucide="shield-check"></i> Gated Society</div>
+                        <div class="amenity-item"><i data-lucide="parking-circle"></i> Car Parking</div>
+                        <div class="amenity-item"><i data-lucide="zap"></i> Power Backup</div>
+                        <div class="amenity-item"><i data-lucide="droplet"></i> 24/7 Water</div>
+                    </div>
+                </section>
+
+                <!-- Seller Info -->
+                <section class="seller-card">
+                    <img src="../assets/profile.png" alt="Seller" class="seller-img">
+                    <div class="seller-info">
+                        <h4>Aman Mishra</h4>
+                        <p>Individual Owner</p>
+                    </div>
+                    <button class="verify-badge"><i data-lucide="check-circle"></i> Verified</button>
+                </section>
+            </header>
+        </article>
+
+        <!-- Bottom Action Bar -->
+        <footer class="action-bar">
+            <button class="wishlist-btn"><i data-lucide="heart"></i></button>
+            <button class="chat-btn"><i data-lucide="message-circle"></i> Chat Now</button>
+            <button class="call-btn"><i data-lucide="phone"></i> Call</button>
+        </footer>
+    </main>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/property-view.js" type="module"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="../js/tracker.js"></script>
+</body>
+</html>

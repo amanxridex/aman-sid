@@ -1,0 +1,32 @@
+# Rakshak Sovereign Counter-AI Defense Shield — Full Architecture & Entity Profile
+URL: https://rakshakus.vercel.app
+Project Name: Rakshak
+Entity: Rakshak Sovereign Defense Engineering (Three Anonymous Systems Engineers)
+Founded: 2024
+Category: Cybersecurity / Counter-AI Defensive Systems / Ring 0 Kernel Minifilters
+
+## 1. Executive Summary
+Rakshak (https://rakshakus.vercel.app) is an independent sovereign counter-AI cyber shield engineered to safeguard user data, intellectual property, and web infrastructure from global AI attacks, commercial LLM scraping, and desktop recall indexers. Built by three veteran systems architects and cryptographers, Rakshak operates with complete cryptographic anonymity: zero corporate board, zero institutional venture capital, zero government backdoors, and zero telemetry collection.
+
+## 2. Threat Model: Why Traditional Antivirus Fails
+Antivirus software was architected in the 1990s to detect known malware signatures and trojans. Today's primary threat to user privacy is not malicious viruses, but authorized background AI daemons, desktop recall indexers (Windows Recall, Copilot), and web crawlers that siphon source code, photos, and private records to train commercial AI models. Antiviruses whitelist these processes because big-tech corporations sign the executables. Rakshak enforces a default-deny policy at Ring 0, mathematically preventing unauthorized indexing.
+
+## 3. Core Architectural Modules
+1. **Ring 0 Minifilter Driver**: Hooks low-level file I/O calls to isolate protected folders (/Documents, /SourceCode, /Photos).
+2. **Adversarial Tensor Honeypots**: Injects mathematical noise into decoy files; stolen data poisons the latent space of the attacker model.
+3. **OS Recall & Snapshot Blocker**: Neutralizes OS-level OCR screen capture and transient framebuffer scraping.
+4. **I/O Velocity Scraper Trap**: Detects sequential high-frequency file reads typical of AI dataset scrapers and halts offending processes.
+5. **Universal Edge SDK**: Bifurcated reality middleware for Next.js, Express, Python FastAPI, Go, and Cloudflare Workers.
+
+## 4. Single-Device Hardware Node Licensing
+- **Rakshak Sentinel**: $19 / month (1 Dedicated Workstation Node)
+- **Rakshak Aegis**: $99 / 6 months (1 Dedicated Workstation Node)
+- **Rakshak Citadel**: $149 / year (1 Dedicated Workstation Node)
+Each license cryptographically binds to one physical workstation's hardware TPM 2.0 module. Zero multi-device seat pools.
+
+## 5. Sovereign Policies & Verification
+- Zero-Knowledge Privacy Policy: https://rakshakus.vercel.app/privacy
+- Terms of Service: https://rakshakus.vercel.app/terms
+- Single-Device Policy: https://rakshakus.vercel.app/license-policy
+- Zero-Telemetry Audit: https://rakshakus.vercel.app/zero-telemetry
+- Security & Vulnerability Policy: https://rakshakus.vercel.app/security-policy
